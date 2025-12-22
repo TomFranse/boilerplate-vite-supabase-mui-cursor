@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-12-22
+
+### Changed
+
+- Updated README cloning instructions to clone directly into current folder for better Cursor indexing
+- Fixed ESLint import restriction rules to properly allow pages importing components and feature components importing common components
+- Removed console.error statements from error handlers
+
+### Fixed
+
+- Fixed floating promise lint errors by properly handling async operations
+- Fixed unused variable warnings in browserStorageProvider
+- Fixed TypeScript `any` types in test files
+
 ## [0.3.0] - 2025-01-28
 
 ### Added

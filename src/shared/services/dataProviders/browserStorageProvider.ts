@@ -8,12 +8,14 @@ import * as browserStorage from "@features/todos/services/todoBrowserStorage";
 export class BrowserStorageProvider implements DataProvider {
   async createTodo(
     input: CreateTodoInput,
-    _userId: string
+    _userId: string // eslint-disable-line @typescript-eslint/no-unused-vars
   ): Promise<{ todo: Todo | null; error: Error | null }> {
     return browserStorage.createTodo(input);
   }
 
-  async getTodos(_userId: string): Promise<{ todos: Todo[]; error: Error | null }> {
+  async getTodos(
+    _userId: string // eslint-disable-line @typescript-eslint/no-unused-vars
+  ): Promise<{ todos: Todo[]; error: Error | null }> {
     const todos = browserStorage.getTodos();
     return { todos, error: null };
   }

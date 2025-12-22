@@ -26,11 +26,14 @@ A modern, production-ready boilerplate for building React applications with Type
 
 ### Step 1: Clone and Install
 
+Open Cursor in the folder where you want to create your project, then run:
+
 ```bash
-git clone <your-repo-url>
-cd vite-mui-supabase-starter
+git clone https://github.com/TomFranse/boilerplate-vite-supabase-mui-cursor .
 pnpm install
 ```
+
+This clones the boilerplate directly into your current folder, ensuring Cursor indexes from the project root.
 
 ### Step 2: Start the Development Server
 

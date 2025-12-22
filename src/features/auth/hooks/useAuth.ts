@@ -27,7 +27,7 @@ export const useAuth = (): UseAuthReturn => {
       setLoading(false);
     };
 
-    initAuth();
+    void initAuth();
   }, []);
 
   const handleLogin = async (credentials: LoginCredentials) => {

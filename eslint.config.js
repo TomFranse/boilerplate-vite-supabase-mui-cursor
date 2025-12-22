@@ -3,12 +3,20 @@ import ignores from './eslint.ignores.js';
 import {defineConfig} from 'eslint/config';
 
 export default defineConfig([
-  {ignores},
+  {
+    ignores: [
+      ...ignores,
+      'eslint.config.js', // Ignore config files
+      'eslint.ignores.js',
+    ],
+  },
   ...gtsConfig,
   {
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.app.json'],
+        // Only use tsconfig.app.json - it's the actual app config
+        // Using both tsconfig files causes duplicate parsing and slows down linting
+        project: ['./tsconfig.app.json'],
       },
     },
     rules: {
@@ -19,26 +27,53 @@ export default defineConfig([
       // Disable React import requirement (using new JSX transform with jsx: "react-jsx")
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
-      // Prevent imports from wrong layers - Architecture enforcement
+    },
+  },
+  // Prevent feature components from importing hooks or services
+  {
+    files: ['src/features/**/components/**'],
+    rules: {
       'no-restricted-imports': [
         'error',
         {
           patterns: [
             {
-              group: [
-                '@features/*/components',
-                '@features/*/hooks',
-                '@features/*/services',
-              ],
+              group: ['@features/*/hooks', '@features/*/services'],
               message:
                 'Components cannot import from hooks or services. Use hooks instead.',
             },
+          ],
+        },
+      ],
+    },
+  },
+  // Prevent hooks from importing components
+  {
+    files: ['src/features/**/hooks/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
             {
-              group: ['@features/*/hooks'],
+              group: ['@features/*/components'],
               message: 'Hooks cannot import from components.',
             },
+          ],
+        },
+      ],
+    },
+  },
+  // Prevent common components from importing features
+  {
+    files: ['src/common/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
             {
-              group: ['@common/*'],
+              group: ['@features/**'],
               message: 'Common components cannot import from features.',
             },
           ],

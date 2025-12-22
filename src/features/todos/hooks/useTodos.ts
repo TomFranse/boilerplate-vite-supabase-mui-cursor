@@ -20,10 +20,10 @@ export const useTodos = (userId: string | null): UseTodosReturn => {
   useEffect(() => {
     // For browser storage, userId can be null
     if (userId !== null) {
-      refreshTodos(userId);
+      void refreshTodos(userId);
     } else {
       // Load from browser storage if no userId (Supabase not configured)
-      refreshTodos("");
+      void refreshTodos("");
     }
   }, [userId]);
 

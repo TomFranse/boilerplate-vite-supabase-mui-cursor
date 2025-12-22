@@ -79,7 +79,7 @@ export const SetupPage = () => {
   const handleCopyEnv = () => {
     const envContent = `VITE_SUPABASE_URL=${supabaseUrl}
 VITE_SUPABASE_ANON_KEY=${supabaseKey}`;
-    navigator.clipboard.writeText(envContent);
+    void navigator.clipboard.writeText(envContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -105,7 +105,7 @@ VITE_SUPABASE_ANON_KEY=${supabaseKey}`;
     const envContent = `VITE_AIRTABLE_API_KEY=${airtableApiKey}
 VITE_AIRTABLE_BASE_ID=${airtableBaseId}
 VITE_AIRTABLE_TABLE_ID=${airtableTableId}`;
-    navigator.clipboard.writeText(envContent);
+    void navigator.clipboard.writeText(envContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -532,7 +532,7 @@ CREATE POLICY "Users can manage their own todos"
   ON todos
   FOR ALL
   USING (auth.uid() = user_id);`;
-                      navigator.clipboard.writeText(sql);
+                      void navigator.clipboard.writeText(sql);
                       setCopied(true);
                       setTimeout(() => setCopied(false), 2000);
                     }}
@@ -883,7 +883,7 @@ CREATE POLICY "Users can manage their own todos"
                       <Button
                         startIcon={<ContentCopy />}
                         onClick={() => {
-                          navigator.clipboard.writeText("pnpm cleanup-setup");
+                          void navigator.clipboard.writeText("pnpm cleanup-setup");
                           setCopied(true);
                           setTimeout(() => setCopied(false), 2000);
                         }}

@@ -31,7 +31,7 @@ describe("authService", () => {
       vi.mocked(mockSupabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: mockUser, session: null },
         error: null,
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof mockSupabase.auth.signInWithPassword>>);
 
       const result = await authService.login({
         email: "test@example.com",
@@ -52,7 +52,7 @@ describe("authService", () => {
       vi.mocked(mockSupabase.auth.signInWithPassword).mockResolvedValue({
         data: { user: null, session: null },
         error: mockError,
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof mockSupabase.auth.signInWithPassword>>);
 
       const result = await authService.login({
         email: "test@example.com",
@@ -68,7 +68,7 @@ describe("authService", () => {
     it("should logout successfully", async () => {
       vi.mocked(mockSupabase.auth.signOut).mockResolvedValue({
         error: null,
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof mockSupabase.auth.signOut>>);
 
       const result = await authService.logout();
 
