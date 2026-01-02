@@ -4,16 +4,19 @@ import { Button } from "@common/Button";
 import { Input } from "@common/Input";
 import { useAuthContext } from "@store/contexts/AuthContext";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import type { LoginCredentials } from "../types/auth.types";
 
 export const LoginForm = () => {
   const { login, loading, error } = useAuthContext();
+  const resetRedirect = useAuthRedirect();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const supabaseConfigured = isSupabaseConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    resetRedirect();
     const credentials: LoginCredentials = { email, password };
     await login(credentials);
   };

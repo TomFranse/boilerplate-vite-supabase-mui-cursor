@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
 import * as authService from "@features/auth/services/authService";
+import { getAndClearRedirectPath } from "@utils/redirectUtils";
 
 /**
  * AuthCallbackPage handles OAuth/SAML redirects from Supabase.
@@ -38,8 +39,9 @@ export const AuthCallbackPage = () => {
             return;
           }
 
-          // Success - redirect to home
-          void navigate("/", { replace: true });
+          // Success - redirect to stored path or home
+          const redirectPath = getAndClearRedirectPath();
+          void navigate(redirectPath || "/", { replace: true });
           return;
         } catch {
           void navigate("/", { replace: true });

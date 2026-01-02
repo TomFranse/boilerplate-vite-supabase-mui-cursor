@@ -13,6 +13,7 @@ const mockSupabase = {
 
 vi.mock("@shared/services/supabaseService", () => ({
   getSupabase: vi.fn(() => mockSupabase),
+  isSupabaseConfigured: vi.fn(() => true),
 }));
 
 describe("authService", () => {

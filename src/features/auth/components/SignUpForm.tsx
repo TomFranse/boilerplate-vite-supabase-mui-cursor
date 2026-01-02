@@ -4,10 +4,12 @@ import { Button } from "@common/Button";
 import { Input } from "@common/Input";
 import { useAuthContext } from "@store/contexts/AuthContext";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import type { SignUpCredentials } from "../types/auth.types";
 
 export const SignUpForm = () => {
   const { signUp, loading, error } = useAuthContext();
+  const resetRedirect = useAuthRedirect();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,6 +20,7 @@ export const SignUpForm = () => {
     if (password !== confirmPassword) {
       return;
     }
+    resetRedirect();
     const credentials: SignUpCredentials = { email, password };
     await signUp(credentials);
   };

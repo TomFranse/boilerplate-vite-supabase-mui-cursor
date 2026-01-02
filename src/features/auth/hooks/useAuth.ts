@@ -146,6 +146,7 @@ export const useAuth = (): UseAuthReturn => {
       setUser(null);
     } else {
       setUser(loggedInUser);
+      // Redirect will be handled by the component that calls login (has Router context)
     }
     setLoading(false);
   };
@@ -159,6 +160,7 @@ export const useAuth = (): UseAuthReturn => {
       setUser(null);
     } else {
       setUser(signedUpUser);
+      // Redirect will be handled by the component that calls signUp (has Router context)
     }
     setLoading(false);
   };

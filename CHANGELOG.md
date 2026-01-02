@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2026-01-03
+
+### Added
+
+- Redirect after sign-in feature - users are redirected to their last visited page after authentication
+- `useAuthRedirect` hook for handling post-authentication redirects
+- Redirect utilities (`redirectUtils.ts`) for managing redirect paths in sessionStorage
+- Path validation to prevent redirect loops (rejects `/login`, `/auth`, `/signup` paths)
+- Comprehensive test coverage for redirect functionality (21 tests)
+
+### Changed
+
+- `ProtectedRoute` now stores intended destination before redirecting to login
+- `LoginForm` and `SignUpForm` use `useAuthRedirect` hook for consistent redirect behavior
+- `AuthCallbackPage` redirects to stored path after OAuth/SAML authentication
+- `ProtectedRoute` loading state now uses MUI `CircularProgress` component instead of plain div
+
+### Fixed
+
+- Fixed test mock for `authService.test.ts` to include `isSupabaseConfigured` export
+- Fixed line ending issues (CRLF to LF) in redirect-related files
+- Fixed floating promise lint error in `useAuthRedirect` hook
+
+### Technical
+
+- Created `src/utils/redirectUtils.ts` with sessionStorage-based redirect path management
+- Created `src/features/auth/hooks/useAuthRedirect.ts` hook for redirect orchestration
+- Added unit tests for redirect utilities (`redirectUtils.test.ts` - 14 tests)
+- Added unit tests for redirect hook (`useAuthRedirect.test.tsx` - 7 tests)
+- Redirect path stored in sessionStorage persists across OAuth redirects
+- Graceful error handling for private browsing mode and storage errors
+
 ## [0.5.3] - 2026-01-02
 
 ### Added
