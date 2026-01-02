@@ -11,4 +11,5 @@ export default [
   'scripts/',
   'pnpm-lock.yaml',
   'public/',
+  'documentation/',
 ];

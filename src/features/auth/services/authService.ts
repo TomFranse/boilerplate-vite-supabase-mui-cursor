@@ -1,4 +1,5 @@
 import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
+import { getEntreefederatieDomain } from "@config/entreefederatie";
 import type { User, LoginCredentials, SignUpCredentials } from "../types/auth.types";
 
 export const login = async (
@@ -126,6 +127,122 @@ export const getCurrentUser = async (): Promise<{
     return {
       user: null,
       error: error instanceof Error ? error : new Error("Get user failed"),
+    };
+  }
+};
+
+/**
+ * Sign in with Google OAuth
+ */
+export const signInWithGoogle = async (): Promise<{ error: Error | null }> => {
+  if (!isSupabaseConfigured()) {
+    return {
+      error: new Error(
+        "Authentication requires Supabase to be configured. Please set up Supabase in the setup wizard."
+      ),
+    };
+  }
+
+  try {
+    // Clean URL hash before OAuth to prevent double-hash issue
+    // Redirect to callback page which will handle the code exchange
+    const redirectUrl = `${window.location.origin}/auth/callback`;
+
+    const { error: signInError } = await getSupabase().auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: redirectUrl,
+      },
+    });
+
+    if (signInError) {
+      return { error: signInError };
+    }
+
+    // Auth state change handler will update user
+    return { error: null };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error : new Error("Failed to sign in with Google"),
+    };
+  }
+};
+
+/**
+ * Sign in with Entreefederatie SAML SSO
+ */
+export const signInWithEntreefederatie = async (): Promise<{ error: Error | null }> => {
+  if (!isSupabaseConfigured()) {
+    return {
+      error: new Error(
+        "Authentication requires Supabase to be configured. Please set up Supabase in the setup wizard."
+      ),
+    };
+  }
+
+  try {
+    // Redirect to callback page which will handle the code exchange
+    const redirectUrl = `${window.location.origin}/auth/callback`;
+
+    const { data, error: ssoError } = await getSupabase().auth.signInWithSSO({
+      domain: getEntreefederatieDomain(),
+      options: {
+        redirectTo: redirectUrl,
+      },
+    });
+
+    if (ssoError) {
+      return { error: ssoError };
+    }
+
+    if (data?.url) {
+      // Redirect to Entreefederatie SAML endpoint
+      window.location.href = data.url;
+      return { error: null };
+    } else {
+      return { error: new Error("No redirect URL returned from SAML SSO") };
+    }
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error : new Error("Failed to sign in with Entreefederatie"),
+    };
+  }
+};
+
+/**
+ * Sign in anonymously (for visitors who haven't logged in)
+ */
+export const signInAnonymously = async (): Promise<{ error: Error | null }> => {
+  if (!isSupabaseConfigured()) {
+    return { error: null }; // No-op when Supabase not configured
+  }
+
+  try {
+    const { error } = await getSupabase().auth.signInAnonymously();
+    return { error: error || null };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error : new Error("Failed to sign in anonymously"),
+    };
+  }
+};
+
+/**
+ * Exchange authorization code for session (used in OAuth/SAML callback)
+ */
+export const exchangeCodeForSession = async (code: string): Promise<{ error: Error | null }> => {
+  if (!isSupabaseConfigured()) {
+    return {
+      error: new Error("Supabase is not configured"),
+    };
+  }
+
+  try {
+    const { error } = await getSupabase().auth.exchangeCodeForSession(code);
+    return { error: error || null };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error : new Error("Failed to exchange code for session"),
     };
   }
 };

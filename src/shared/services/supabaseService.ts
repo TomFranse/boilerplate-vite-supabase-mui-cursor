@@ -26,7 +26,15 @@ export const initSupabase = (): SupabaseClient | null => {
   }
 
   if (!supabase) {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        // Use PKCE flow for better security and CORS compatibility
+        flowType: "pkce",
+      },
+    });
   }
 
   return supabase;
@@ -41,7 +49,15 @@ export const getSupabase = (): SupabaseClient => {
   }
 
   if (!supabase) {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
+    supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        // Use PKCE flow for better security and CORS compatibility
+        flowType: "pkce",
+      },
+    });
   }
 
   return supabase;
@@ -55,7 +71,14 @@ export const testSupabaseConnection = async (
   key: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    const testClient = createClient(url, key);
+    const testClient = createClient(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        flowType: "pkce",
+      },
+    });
     // Try to get the current session to test the connection
     const { error } = await testClient.auth.getSession();
 

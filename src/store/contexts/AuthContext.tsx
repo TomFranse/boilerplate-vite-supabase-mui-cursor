@@ -9,6 +9,8 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<void>;
   signUp: (credentials: SignUpCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithEntreefederatie: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

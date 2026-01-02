@@ -13,6 +13,8 @@ src/
 │   ├── Button/
 │   ├── Input/
 │   └── Modal/
+├── components/          # App-level components (ProfileMenu, ProtectedRoute, etc.)
+├── config/              # Configuration files (Entreefederatie, etc.)
 ├── features/            # Feature modules (business logic)
 │   ├── auth/
 │   │   ├── components/  # Feature-specific UI components
@@ -32,8 +34,7 @@ src/
 │       ├── defaultTheme.ts    # Default theme (preserved)
 │       ├── themeLoader.ts      # Theme loading and persistence
 │       └── theme.ts            # Theme export (uses loader)
-├── utils/               # Utility functions
-└── components/          # App-level components (ProtectedRoute, etc.)
+└── utils/               # Utility functions
 ```
 
 ## Layer Rules

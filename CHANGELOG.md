@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-01-02
+
+### Added
+
+- OAuth authentication with Google
+- SAML SSO authentication with Entreefederatie (school accounts)
+- ProfileMenu component matching main app UX pattern
+- Anonymous authentication for visitors (automatic session creation)
+- Auth callback page (`/auth/callback`) for handling OAuth/SAML redirects
+- Entreefederatie configuration file (`src/config/entreefederatie.ts`)
+- Real-time auth state management with `onAuthStateChange` listener
+- PKCE flow for enhanced security in Supabase client
+
+### Changed
+
+- Replaced email/password login form with OAuth/SAML sign-in options
+- Updated `LoginPage` to use ProfileMenu pattern
+- Updated `MainLayout` to integrate ProfileMenu in navigation bar
+- Enhanced Supabase client configuration with proper auth options (persistSession, autoRefreshToken, detectSessionInUrl, PKCE)
+- Auth state now updates in real-time via Supabase auth state listener
+- Anonymous sessions are automatically created for unauthenticated visitors
+
+### Technical
+
+- Added `signInWithGoogle()` and `signInWithEntreefederatie()` methods to `authService.ts`
+- Added `signInAnonymously()` method for visitor sessions
+- Added `exchangeCodeForSession()` for OAuth/SAML callback handling
+- Updated `useAuth.ts` hook with `onAuthStateChange` listener
+- Added `@components` and `@config` path aliases
+- Removed temporary console logs (kept only essential error logging)
+- Fixed TypeScript type issues and linting errors
+
 ## [0.3.3] - 2024-12-23
 
 ### Added

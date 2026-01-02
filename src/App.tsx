@@ -7,6 +7,7 @@ import { LoginPage } from "@pages/LoginPage";
 import { SignUpPage } from "@pages/SignUpPage";
 import { TodosPage } from "@pages/TodosPage";
 import { SetupPage } from "@pages/SetupPage";
+import { AuthCallbackPage } from "@pages/AuthCallbackPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { shouldShowSetup } from "./utils/setupUtils";
 
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
               </Route>
+              <Route path="/auth/callback" element={<AuthCallbackPage />} />
               <Route path="/setup" element={<SetupPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>

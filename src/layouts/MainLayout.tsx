@@ -1,17 +1,12 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Container, Box } from "@mui/material";
 import { useAuthContext } from "@store/contexts/AuthContext";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
+import { ProfileMenu } from "@components/ProfileMenu";
 
 export const MainLayout = () => {
-  const { user, logout } = useAuthContext();
-  const navigate = useNavigate();
+  const { user } = useAuthContext();
   const supabaseConfigured = isSupabaseConfigured();
-
-  const handleLogout = async () => {
-    await logout();
-    void navigate("/login");
-  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -22,34 +17,17 @@ export const MainLayout = () => {
               Vite MUI Supabase Starter
             </Link>
           </Typography>
-          {user ? (
-            <>
-              <Button color="inherit" component={Link} to="/todos">
-                Todos
-              </Button>
-              <Button color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
-            </>
-          ) : supabaseConfigured ? (
-            <>
-              <Button color="inherit" component={Link} to="/login">
-                Login
-              </Button>
-              <Button color="inherit" component={Link} to="/signup">
-                Sign Up
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button color="inherit" component={Link} to="/todos">
-                Todos
-              </Button>
-              <Button color="inherit" component={Link} to="/setup">
-                Setup
-              </Button>
-            </>
+          {user && (
+            <Button color="inherit" component={Link} to="/todos">
+              Todos
+            </Button>
           )}
+          {!supabaseConfigured && (
+            <Button color="inherit" component={Link} to="/setup">
+              Setup
+            </Button>
+          )}
+          <ProfileMenu />
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ flex: 1, py: 4 }}>
