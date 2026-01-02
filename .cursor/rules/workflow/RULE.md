@@ -166,9 +166,43 @@ Projects may use different branch strategies based on their needs:
 - Verify current documentation before implementing features
 
 ### Shell/PowerShell Handling
-- To avoid Cursor from crashing, you may need to use `if ($LASTEXITCODE -ne 0) { exit 1 }` sometimes in PowerShell scripts
-- Handle exit codes properly in shell scripts
-- Ensure proper error propagation
+
+**CRITICAL**: Always check `$LASTEXITCODE` after external commands to prevent Cursor crashes. PowerShell doesn't always propagate exit codes correctly, and Cursor crashes when it receives error output but thinks the command succeeded (exit code 0).
+
+**Required Pattern:**
+
+```powershell
+npm run lint; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
+
+**Use `$LASTEXITCODE` (not `$?`)** - it reflects the actual process exit code, not PowerShell's error state.
+
+**Common Patterns:**
+
+```powershell
+# Simple command
+npm run build; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# With directory change
+cd "path"; if ($?) { 
+  npm run lint
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
+# With output filtering
+cd "path"; if ($?) {
+  npm run test 2>&1 | Select-Object -First 30
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
+# With special characters (Prettier/ESLint errors)
+npm run lint 2>&1 | ForEach-Object { $_.ToString() } | Select-Object -First 50
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+```
+
+**Always check exit codes for:** npm/node commands (lint, test, build), commands that might fail, commands with output filtering.
+
+**Preserve original exit code:** Use `exit $LASTEXITCODE` (not hardcoded `exit 1`).
 
 ### Environment Files
 - **Note**: There may be env files in the repo that you might not be able to see
