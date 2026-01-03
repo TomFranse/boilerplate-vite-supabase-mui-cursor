@@ -40,20 +40,9 @@ export const HomePage = () => {
         ) : (
           <Box sx={{ mt: 4 }}>
             {supabaseConfigured ? (
-              <>
-                <Button
-                  variant="contained"
-                  size="large"
-                  component={Link}
-                  to="/login"
-                  sx={{ mr: 2 }}
-                >
-                  Login
-                </Button>
-                <Button variant="outlined" size="large" component={Link} to="/signup">
-                  Sign Up
-                </Button>
-              </>
+              <Typography variant="body1" color="text.secondary">
+                Use the profile icon in the topbar to sign in.
+              </Typography>
             ) : (
               <Button variant="contained" size="large" component={Link} to="/setup">
                 Configure Supabase

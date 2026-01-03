@@ -26,7 +26,7 @@ src/
 │   │   ├── hooks/       # Setup-related hooks
 │   │   ├── services/    # Setup-related services (API calls)
 │   │   └── sections/   # Setup section components
-├── layouts/             # Layout components (MainLayout, AuthLayout)
+├── layouts/             # Layout components (MainLayout)
 ├── pages/               # Route-level page components
 ├── store/               # Global state management
 │   └── contexts/        # React contexts (AuthContext, etc.)

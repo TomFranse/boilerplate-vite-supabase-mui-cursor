@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **Login and Signup Pages**: Removed dedicated authentication pages
+  - Removed `LoginPage` and `SignUpPage` components
+  - Removed `AuthLayout` (no longer needed)
+  - Removed `SignUpForm` component
+  - Authentication now handled entirely through ProfileMenu in topbar
+  - Updated HomePage to show message directing users to topbar for sign-in
+
 ### Changed
 
 - **SetupPage Refactoring**: Moved logic from page to feature following architecture rules
