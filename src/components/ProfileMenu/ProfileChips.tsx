@@ -1,6 +1,6 @@
 import { Box, Chip } from "@mui/material";
 import type { UserProfile } from "@features/auth/hooks/useUserProfile";
-import { getRoleDisplay } from "./profileHelpers";
+import { getRoleDisplay } from "@features/auth/utils/profileHelpers";
 
 interface ProfileChipsProps {
   profile: UserProfile;

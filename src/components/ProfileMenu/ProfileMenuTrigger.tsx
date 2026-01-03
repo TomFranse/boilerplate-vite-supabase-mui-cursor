@@ -2,7 +2,7 @@ import { IconButton, Tooltip, Avatar } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import type { User } from "@features/auth/types/auth.types";
 import type { UserProfile } from "@features/auth/hooks/useUserProfile";
-import { getAvatarInitial, getAvatarUrl } from "./profileHelpers";
+import { getAvatarInitial, getAvatarUrl } from "@features/auth/utils/profileHelpers";
 
 interface ProfileMenuTriggerProps {
   user: User | null;

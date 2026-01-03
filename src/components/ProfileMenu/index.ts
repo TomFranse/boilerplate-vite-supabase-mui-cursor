@@ -5,4 +5,4 @@ export { ProfileName } from "./ProfileName";
 export { ProfileEmail } from "./ProfileEmail";
 export { SignInMenuItems } from "./SignInMenuItems";
 export { ProfileMenuContent } from "./ProfileMenuContent";
-export * from "./profileHelpers";
+export * from "@features/auth/utils/profileHelpers";

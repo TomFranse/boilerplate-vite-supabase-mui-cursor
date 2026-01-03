@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.8] - 2026-01-03
+
+### Fixed
+
+- Architectural violations: Moved ProfileMenu hooks and utilities to correct locations
+  - Moved `useProfileMenuState` and `useProfileMenuHandlers` hooks from `components/ProfileMenu/` to `features/auth/hooks/`
+  - Moved `profileHelpers` and `menuConfig` utilities from `components/ProfileMenu/` to `features/auth/utils/`
+  - Updated all import statements to use correct paths with `@features/auth/` aliases
+
+### Technical
+
+- **Architecture Compliance**: Fixed violations of "The Hook Rule" and "The Service/Util Rule" from `.cursor/rules/architecture/RULE.md`
+- All hooks now correctly located in `features/[feature]/hooks/` directories
+- All utilities now correctly located in `features/[feature]/utils/` directories
+- Components folder now only contains UI components (no business logic)
+- Type-check passes, build succeeds, no linting errors
+
 ## [0.5.7] - 2026-01-03
 
 ### Changed
