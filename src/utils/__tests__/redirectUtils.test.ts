@@ -15,14 +15,14 @@ describe("redirectUtils", () => {
 
   describe("storeRedirectPath", () => {
     it("should store a valid path in sessionStorage", () => {
-      storeRedirectPath("/todos");
-      expect(sessionStorage.getItem("auth_redirect_path")).toBe("/todos");
+      storeRedirectPath("/dashboard");
+      expect(sessionStorage.getItem("auth_redirect_path")).toBe("/dashboard");
     });
 
     it("should overwrite existing path", () => {
-      storeRedirectPath("/todos");
       storeRedirectPath("/dashboard");
-      expect(sessionStorage.getItem("auth_redirect_path")).toBe("/dashboard");
+      storeRedirectPath("/settings");
+      expect(sessionStorage.getItem("auth_redirect_path")).toBe("/settings");
     });
 
     it("should handle errors gracefully (e.g., private browsing mode)", () => {
@@ -35,7 +35,7 @@ describe("redirectUtils", () => {
       });
 
       // Should not throw
-      expect(() => storeRedirectPath("/todos")).not.toThrow();
+      expect(() => storeRedirectPath("/dashboard")).not.toThrow();
       expect(consoleWarnSpy).toHaveBeenCalled();
 
       // Restore
@@ -46,10 +46,10 @@ describe("redirectUtils", () => {
 
   describe("getAndClearRedirectPath", () => {
     it("should retrieve and remove a valid path", () => {
-      sessionStorage.setItem("auth_redirect_path", "/todos");
+      sessionStorage.setItem("auth_redirect_path", "/dashboard");
       const path = getAndClearRedirectPath();
 
-      expect(path).toBe("/todos");
+      expect(path).toBe("/dashboard");
       expect(sessionStorage.getItem("auth_redirect_path")).toBeNull();
     });
 
@@ -83,7 +83,7 @@ describe("redirectUtils", () => {
     });
 
     it("should reject paths that do not start with /", () => {
-      sessionStorage.setItem("auth_redirect_path", "todos");
+      sessionStorage.setItem("auth_redirect_path", "dashboard");
       const path = getAndClearRedirectPath();
 
       expect(path).toBeNull();
@@ -91,7 +91,7 @@ describe("redirectUtils", () => {
     });
 
     it("should accept valid paths", () => {
-      const validPaths = ["/", "/todos", "/dashboard", "/settings", "/profile/123"];
+      const validPaths = ["/", "/dashboard", "/settings", "/profile/123"];
 
       validPaths.forEach((validPath) => {
         sessionStorage.setItem("auth_redirect_path", validPath);
@@ -121,7 +121,7 @@ describe("redirectUtils", () => {
 
   describe("clearRedirectPath", () => {
     it("should remove the stored path", () => {
-      sessionStorage.setItem("auth_redirect_path", "/todos");
+      sessionStorage.setItem("auth_redirect_path", "/dashboard");
       clearRedirectPath();
       expect(sessionStorage.getItem("auth_redirect_path")).toBeNull();
     });

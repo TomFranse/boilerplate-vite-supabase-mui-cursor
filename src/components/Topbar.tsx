@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { useAuthContext } from "@store/contexts/AuthContext";
 import { ProfileMenu } from "@components/ProfileMenu";
 
 /**
@@ -8,7 +7,6 @@ import { ProfileMenu } from "@components/ProfileMenu";
  * This component is designed to be reusable across all apps.
  */
 export const Topbar = () => {
-  const { user } = useAuthContext();
   const location = useLocation();
 
   return (
@@ -32,15 +30,6 @@ export const Topbar = () => {
 
         {/* Navigation buttons */}
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          {user && (
-            <Button
-              color={location.pathname === "/todos" ? "primary" : "inherit"}
-              component={Link}
-              to="/todos"
-            >
-              Todos
-            </Button>
-          )}
           <Button
             color={location.pathname === "/setup" ? "primary" : "inherit"}
             component={Link}

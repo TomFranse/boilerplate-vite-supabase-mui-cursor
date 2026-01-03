@@ -4,7 +4,6 @@ import {
   Box,
   Typography,
   Button,
-  LinearProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -12,33 +11,24 @@ import {
   DialogContentText,
 } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
-import { migrateOldSetupState, getSetupSectionsState, getEnabledFeatures } from "@utils/setupUtils";
+import { migrateOldSetupState, getEnabledFeatures } from "@utils/setupUtils";
 import { SupabaseCard } from "./setup/sections/SupabaseSection";
 import { AirtableCard } from "./setup/sections/AirtableSection";
-import { DatabaseCard } from "./setup/sections/DatabaseSection";
 import { HostingCard } from "./setup/sections/HostingSection";
 import { ThemeCard } from "./setup/sections/ThemeSection";
 
 export const SetupPage = () => {
-  const [sectionsState, setSectionsState] = useState(getSetupSectionsState());
   const [finishDialogOpen, setFinishDialogOpen] = useState(false);
   const [finishing, setFinishing] = useState(false);
 
   // Migrate old state on mount
   useEffect(() => {
     migrateOldSetupState();
-    setSectionsState(getSetupSectionsState());
   }, []);
 
   const handleStatusChange = () => {
-    setSectionsState(getSetupSectionsState());
-  };
-
-  const calculateProgress = () => {
-    const state = getSetupSectionsState();
-    const total = Object.keys(state).length;
-    const completed = Object.values(state).filter((status) => status === "completed").length;
-    return (completed / total) * 100;
+    // Status change handler for setup cards
+    // No state tracking needed since we removed the progress bar
   };
 
   const handleFinishSetup = async () => {
@@ -70,39 +60,13 @@ export const SetupPage = () => {
     }
   };
 
-  const progress = calculateProgress();
-  const completedCount = Object.values(sectionsState).filter(
-    (status) => status === "completed"
-  ).length;
-  const totalCount = Object.keys(sectionsState).length;
-
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ textAlign: "center", mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Welcome to Vite MUI Supabase Starter
-        </Typography>
+      <Box sx={{ mb: 4 }}>
         <Typography variant="body1" color="text.secondary" paragraph>
           Configure your app components. All sections are optional - configure what you need and
           skip the rest.
         </Typography>
-      </Box>
-
-      {/* Progress Indicator */}
-      <Box sx={{ mb: 4 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            Setup Progress
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {completedCount} of {totalCount} completed
-          </Typography>
-        </Box>
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          sx={{ height: 8, borderRadius: 1 }}
-        />
       </Box>
 
       {/* Cards Grid */}
@@ -122,7 +86,6 @@ export const SetupPage = () => {
       >
         <SupabaseCard onStatusChange={handleStatusChange} />
         <AirtableCard onStatusChange={handleStatusChange} />
-        <DatabaseCard onStatusChange={handleStatusChange} />
         <HostingCard onStatusChange={handleStatusChange} />
         <ThemeCard onStatusChange={handleStatusChange} />
       </Box>

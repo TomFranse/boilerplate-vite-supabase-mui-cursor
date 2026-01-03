@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-01-03
+
+### Removed
+
+- **Todo feature**: Removed all todo-related functionality to simplify boilerplate
+  - Removed `TodosPage` and all todo components
+  - Removed todo feature directory (`src/features/todos/`)
+  - Removed data provider pattern (types, factory, and all provider implementations)
+  - Removed `ProtectedRoute` component (no longer needed)
+  - Removed database setup section from setup wizard
+- **Database setup**: Removed "Create Database Tables" step from setup wizard
+  - Removed `DatabaseSection.tsx` component
+  - Removed database section from setup state tracking
+
+### Changed
+
+- **Setup page**: Simplified setup wizard UI
+  - Removed title "Welcome to Vite MUI Supabase Starter" (already in topbar)
+  - Removed progress bar and related logic
+  - Simplified description text layout
+- **Navigation**: Removed "Todos" button from topbar
+- **Home page**: Removed todo-related buttons and references
+- **Workflow rules**: Updated PowerShell examples to prevent VS Code network errors
+  - Added `Out-String` before `Select-Object` in all examples
+  - Added warning about direct piping to `Select-Object`
+
+### Fixed
+
+- Removed unused variables (`user` in Topbar, `sectionsState` in SetupPage)
+- Fixed all linting errors (only warnings remain)
+
+### Technical
+
+- **Boilerplate Focus**: Now focused on connecting APIs (Supabase for auth, Airtable for data) and theme setup
+- **Cleanup**: Removed empty `dataProviders` directory
+- **Documentation**: Updated README to remove todo references
+- **Tests**: Updated test files to use `/dashboard` instead of `/todos` paths
+
 ## [0.5.8] - 2026-01-03
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Vite MUI Supabase Starter
 
-A modern, production-ready boilerplate for building React applications with TypeScript, Vite, Material-UI, and Supabase. This starter enforces strict architectural rules and includes authentication and todos features as examples.
+A modern, production-ready boilerplate for building React applications with TypeScript, Vite, Material-UI, and Supabase. This starter enforces strict architectural rules and includes authentication as an example feature.
 
 ## Features
 
@@ -13,8 +13,7 @@ A modern, production-ready boilerplate for building React applications with Type
 - 🧪 **Vitest** - Fast unit testing framework
 - 🏗️ **Strict Architecture** - Enforced folder structure and import rules
 - 🔒 **Authentication** - Complete auth flow (login, signup, logout) - requires Supabase
-- ✅ **Todos Feature** - Example CRUD implementation with browser storage fallback
-- 💾 **Browser Storage** - Todos work without Supabase using local storage
+- 📊 **Airtable Integration** - Connect to Airtable as a data source (optional)
 
 ## Prerequisites
 
@@ -56,21 +55,9 @@ The app will open at `http://localhost:5173/` (or another port if 5173 is in use
 
 ### Step 3: Complete the Setup Wizard
 
-When you first run the app, a setup wizard will guide you through configuration. You have two options:
+When you first run the app, a setup wizard will guide you through configuration. All sections are optional - configure what you need and skip the rest.
 
-#### Option A: Skip Supabase (Start Simple) ⚡
-
-- Click **"Skip Database Setup"** in the wizard
-- Todos will work using browser local storage
-- Perfect for frontend development and testing
-- You can configure Supabase later anytime
-
-**What works without Supabase:**
-- ✅ Todos feature (saved in browser)
-- ✅ All UI components and frontend features
-- ✅ Theme customization
-
-#### Option B: Configure Supabase (Full Features) 🚀
+#### Configure Supabase (Authentication) 🔐
 
 1. **Get Supabase Credentials:**
    - Create a free account at [supabase.com](https://supabase.com)
@@ -90,12 +77,13 @@ When you first run the app, a setup wizard will guide you through configuration.
    - **Note:** The legacy `VITE_SUPABASE_ANON_KEY` also works for backward compatibility
    - **Important:** Restart your dev server (`Ctrl+C` then `pnpm dev` again)
 
-3. **Set Up Database:**
-   - Go to Supabase Dashboard → **SQL Editor**
-   - Run the SQL provided in the wizard (creates the `todos` table)
-   - This enables cloud sync and authentication
+#### Configure Airtable (Optional) 📊
 
-4. **Optional: Customize Theme:**
+- Enter your Airtable API key, Base ID, and Table ID in the setup wizard
+- This enables you to connect to Airtable as a data source
+
+#### Customize Theme (Optional) 🎨
+
    - Use the [MUI Theme Creator](https://bareynol.github.io/mui-theme-creator/) to generate a theme JSON
    - Paste it in the theme step (or skip to use default)
 
@@ -104,7 +92,6 @@ When you first run the app, a setup wizard will guide you through configuration.
 - **Home:** `http://localhost:5173/`
 - **Setup:** `http://localhost:5173/setup` (accessible anytime)
 - **Login:** `http://localhost:5173/login` (if Supabase is configured)
-- **Todos:** `http://localhost:5173/todos`
 
 ### That's It! 🎉
 
@@ -129,36 +116,14 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 **Note:** The legacy `VITE_SUPABASE_ANON_KEY` also works for backward compatibility.
 
-3. Create a `todos` table in your Supabase project:
-   ```sql
-   CREATE TABLE todos (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     title TEXT NOT NULL,
-     description TEXT,
-     status TEXT NOT NULL DEFAULT 'pending',
-     user_id UUID NOT NULL REFERENCES auth.users(id),
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
+3. Restart the development server for environment variables to take effect
 
-   -- Enable Row Level Security
-   ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+### Features
 
-   -- Create policy for users to manage their own todos
-   CREATE POLICY "Users can manage their own todos"
-     ON todos
-     FOR ALL
-     USING (auth.uid() = user_id);
-   ```
-
-4. Restart the development server for environment variables to take effect
-
-### Features Without Supabase
-
-- ✅ **Todos**: Works with browser local storage (data saved in your browser)
+- ✅ **Authentication**: Supabase authentication (when configured)
+- ✅ **Airtable Integration**: Connect to Airtable as a data source (when configured)
+- ✅ **Theme Customization**: Customize the MUI theme
 - ✅ **Frontend Development**: All UI components and features work independently
-- ❌ **Authentication**: Requires Supabase to be configured
-- ❌ **Cloud Sync**: Todos won't sync across devices without Supabase
 
 ### Configuring Supabase Later
 
@@ -169,7 +134,6 @@ If you skipped Supabase setup initially, you can configure it anytime:
 3. Create the `.env` file with your credentials (see [Manual Supabase Setup](#optional-manual-supabase-setup))
 4. **Restart your development server** (`Ctrl+C` then `pnpm dev`)
 
-**Note**: Browser-stored todos and Supabase todos are stored separately. When you configure Supabase, you'll start with an empty todos list in the database.
 
 ### Troubleshooting
 
@@ -250,13 +214,12 @@ This project follows a strict feature-based architecture. See [ARCHITECTURE.md](
 src/
 ├── assets/          # Static assets and global styles
 ├── common/          # Reusable UI components (no business logic)
-├── features/        # Feature modules (auth, todos, etc.)
+├── features/        # Feature modules (auth, etc.)
 │   ├── auth/
 │   │   ├── components/
 │   │   ├── hooks/
 │   │   ├── services/
 │   │   └── types/
-│   └── todos/
 ├── layouts/         # Layout components
 ├── pages/           # Route-level page components
 ├── store/           # Global state (contexts, etc.)

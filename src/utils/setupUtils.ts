@@ -2,13 +2,12 @@ import { isSupabaseConfigured } from "@shared/services/supabaseService";
 import { isAirtableConfigured } from "@shared/services/airtableService";
 import { getCustomTheme } from "@shared/theme/themeLoader";
 
-export type SetupSectionId = "supabase" | "airtable" | "database" | "hosting" | "theme";
+export type SetupSectionId = "supabase" | "airtable" | "hosting" | "theme";
 export type SetupStatus = "not-started" | "in-progress" | "completed" | "skipped";
 
 export interface SetupSectionsState {
   supabase: SetupStatus;
   airtable: SetupStatus;
-  database: SetupStatus;
   hosting: SetupStatus;
   theme: SetupStatus;
 }
@@ -17,7 +16,6 @@ const SETUP_SECTIONS_STORAGE_KEY = "setup_sections_state";
 const DEFAULT_STATE: SetupSectionsState = {
   supabase: "not-started",
   airtable: "not-started",
-  database: "not-started",
   hosting: "not-started",
   theme: "not-started",
 };
@@ -72,11 +70,6 @@ const detectCompletedSections = (): Partial<SetupSectionsState> => {
   // Check Theme
   if (getCustomTheme() !== null) {
     detected.theme = "completed";
-  }
-
-  // Check Database (stored in localStorage)
-  if (localStorage.getItem("database_setup_complete") === "true") {
-    detected.database = "completed";
   }
 
   return detected;

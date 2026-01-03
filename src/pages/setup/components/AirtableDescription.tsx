@@ -30,7 +30,7 @@ export const AirtableDescription = () => {
             <ListItemText primary="• Base ID (found in your base's API documentation)" />
           </ListItem>
           <ListItem>
-            <ListItemText primary="• Table ID (the name of your table, e.g., 'Todos')" />
+            <ListItemText primary="• Table ID (the name of your table, e.g., 'My Table')" />
           </ListItem>
         </List>
       </Alert>

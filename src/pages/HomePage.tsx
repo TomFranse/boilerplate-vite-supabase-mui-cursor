@@ -19,8 +19,7 @@ export const HomePage = () => {
         {!supabaseConfigured && (
           <Alert severity="info" sx={{ mb: 3, textAlign: "left" }}>
             <Typography variant="body2">
-              <strong>Local Storage Mode:</strong> You're running the app without Supabase
-              configured. Todos are saved in your browser.{" "}
+              <strong>Local Mode:</strong> You're running the app without Supabase configured.{" "}
               <Typography
                 component={Link}
                 to="/setup"
@@ -28,7 +27,7 @@ export const HomePage = () => {
               >
                 Configure Supabase
               </Typography>{" "}
-              to enable authentication and cloud sync.
+              to enable authentication.
             </Typography>
           </Alert>
         )}
@@ -37,9 +36,6 @@ export const HomePage = () => {
             <Typography variant="body1" paragraph>
               Welcome back, {user.email}!
             </Typography>
-            <Button variant="contained" size="large" component={Link} to="/todos" sx={{ mr: 2 }}>
-              Go to Todos
-            </Button>
           </Box>
         ) : (
           <Box sx={{ mt: 4 }}>
@@ -59,20 +55,9 @@ export const HomePage = () => {
                 </Button>
               </>
             ) : (
-              <>
-                <Button
-                  variant="contained"
-                  size="large"
-                  component={Link}
-                  to="/todos"
-                  sx={{ mr: 2 }}
-                >
-                  Go to Todos
-                </Button>
-                <Button variant="outlined" size="large" component={Link} to="/setup">
-                  Configure Supabase
-                </Button>
-              </>
+              <Button variant="contained" size="large" component={Link} to="/setup">
+                Configure Supabase
+              </Button>
             )}
           </Box>
         )}

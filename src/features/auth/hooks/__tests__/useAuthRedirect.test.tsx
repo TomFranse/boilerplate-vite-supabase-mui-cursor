@@ -52,7 +52,7 @@ describe("useAuthRedirect", () => {
 
   it("should redirect to stored path when user logs in successfully", async () => {
     const mockGetAndClearRedirectPath = vi.spyOn(redirectUtils, "getAndClearRedirectPath");
-    mockGetAndClearRedirectPath.mockReturnValue("/todos");
+    mockGetAndClearRedirectPath.mockReturnValue("/dashboard");
 
     const { rerender } = renderHook(() => useAuthRedirect(), { wrapper });
 
@@ -66,7 +66,7 @@ describe("useAuthRedirect", () => {
 
     await waitFor(() => {
       expect(mockGetAndClearRedirectPath).toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith("/todos", { replace: true });
+      expect(mockNavigate).toHaveBeenCalledWith("/dashboard", { replace: true });
     });
   });
 
@@ -122,7 +122,7 @@ describe("useAuthRedirect", () => {
 
   it("should not redirect multiple times", async () => {
     const mockGetAndClearRedirectPath = vi.spyOn(redirectUtils, "getAndClearRedirectPath");
-    mockGetAndClearRedirectPath.mockReturnValue("/todos");
+    mockGetAndClearRedirectPath.mockReturnValue("/dashboard");
 
     vi.mocked(useAuthContext).mockReturnValue({
       ...defaultAuthContext,
@@ -147,7 +147,7 @@ describe("useAuthRedirect", () => {
 
   it("should reset redirect flag when user logs out", async () => {
     const mockGetAndClearRedirectPath = vi.spyOn(redirectUtils, "getAndClearRedirectPath");
-    mockGetAndClearRedirectPath.mockReturnValue("/todos");
+    mockGetAndClearRedirectPath.mockReturnValue("/dashboard");
 
     const { rerender } = renderHook(() => useAuthRedirect(), { wrapper });
 
@@ -165,7 +165,7 @@ describe("useAuthRedirect", () => {
 
     mockNavigate.mockClear();
     mockGetAndClearRedirectPath.mockClear();
-    mockGetAndClearRedirectPath.mockReturnValue("/todos");
+    mockGetAndClearRedirectPath.mockReturnValue("/dashboard");
 
     // User logs out
     vi.mocked(useAuthContext).mockReturnValue({

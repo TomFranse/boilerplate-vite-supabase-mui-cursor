@@ -7,10 +7,8 @@ import { AuthLayout } from "@layouts/AuthLayout";
 import { HomePage } from "@pages/HomePage";
 import { LoginPage } from "@pages/LoginPage";
 import { SignUpPage } from "@pages/SignUpPage";
-import { TodosPage } from "@pages/TodosPage";
 import { SetupPage } from "@pages/SetupPage";
 import { AuthCallbackPage } from "@pages/AuthCallbackPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function AppContent() {
   const theme = useTheme();
@@ -26,14 +24,6 @@ function AppContent() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
-            <Route
-              path="/todos"
-              element={
-                <ProtectedRoute>
-                  <TodosPage />
-                </ProtectedRoute>
-              }
-            />
           </Route>
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />

@@ -169,6 +169,8 @@ Projects may use different branch strategies based on their needs:
 
 **CRITICAL**: Always check `$LASTEXITCODE` after external commands to prevent Cursor crashes. PowerShell doesn't always propagate exit codes correctly, and Cursor crashes when it receives error output but thinks the command succeeded (exit code 0).
 
+**IMPORTANT**: When piping to `Select-Object`, always use `Out-String` first to avoid VS Code/Cursor network errors. Direct piping to `Select-Object` triggers a network error in the IDE.
+
 **Required Pattern:**
 
 ```powershell
@@ -189,14 +191,18 @@ cd "path"; if ($?) {
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-# With output filtering
+# With output filtering (use Out-String to avoid VS Code network errors)
 cd "path"; if ($?) {
-  npm run test 2>&1 | Select-Object -First 30
+  npm run test 2>&1 | Out-String | Select-Object -First 30
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-# With special characters (Prettier/ESLint errors)
-npm run lint 2>&1 | ForEach-Object { $_.ToString() } | Select-Object -First 50
+# With special characters (Prettier/ESLint errors) - use Out-String before Select-Object
+npm run lint 2>&1 | Out-String | Select-Object -First 50
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+# Alternative: Capture to variable first (also safe)
+$output = npm run lint 2>&1; $output | Select-Object -First 50
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 ```
 

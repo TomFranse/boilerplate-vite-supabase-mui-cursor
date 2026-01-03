@@ -44,8 +44,8 @@ export const AirtableFormFields = ({
         onChange={(e) => onTableIdChange(e.target.value)}
         fullWidth
         margin="normal"
-        placeholder="Todos"
-        helperText="The name of your table (e.g., 'Todos')"
+        placeholder="My Table"
+        helperText="The name of your table (e.g., 'My Table')"
       />
     </Box>
   );

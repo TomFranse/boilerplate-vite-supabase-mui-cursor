@@ -72,12 +72,10 @@ function removeSetupFiles() {
 function removeSupabaseFiles() {
   const files = [
     "src/shared/services/supabaseService.ts",
-    "src/shared/services/dataProviders/supabaseProvider.ts",
     "src/pages/LoginPage.tsx",
     "src/pages/SignUpPage.tsx",
     "src/pages/AuthCallbackPage.tsx",
     "src/store/contexts/AuthContext.tsx",
-    "src/components/ProtectedRoute.tsx",
   ];
 
   const directories = ["src/features/auth"];
@@ -102,7 +100,6 @@ function removeSupabaseFiles() {
 function removeAirtableFiles() {
   const files = [
     "src/shared/services/airtableService.ts",
-    "src/shared/services/dataProviders/airtableProvider.ts",
   ];
 
   let removed = 0;
@@ -150,7 +147,6 @@ function updateAppTsx(enabledFeatures) {
     content = content.replace(/import { LoginPage } from "@pages\/LoginPage";\s*\n/g, "");
     content = content.replace(/import { SignUpPage } from "@pages\/SignUpPage";\s*\n/g, "");
     content = content.replace(/import { AuthCallbackPage } from "@pages\/AuthCallbackPage";\s*\n/g, "");
-    content = content.replace(/import { ProtectedRoute } from "\.\/components\/ProtectedRoute";\s*\n/g, "");
     content = content.replace(/import { AuthLayout } from "@layouts\/AuthLayout";\s*\n/g, "");
 
     // Remove AuthProvider wrapper
@@ -160,12 +156,6 @@ function updateAppTsx(enabledFeatures) {
     // Remove auth routes
     content = content.replace(/<Route element=\{<AuthLayout \/>\}>[\s\S]*?<\/Route>/g, "");
     content = content.replace(/<Route path="\/auth\/callback" element=\{<AuthCallbackPage \/>\} \/>\s*\n/g, "");
-
-    // Remove ProtectedRoute wrapper from todos
-    content = content.replace(
-      /<Route\s+path="\/todos"\s+element=\{\s*<ProtectedRoute>\s*<TodosPage \/>\s*<\/ProtectedRoute>\s*\}\s*\/>/g,
-      '<Route path="/todos" element={<TodosPage />} />'
-    );
   }
 
   // Clean up extra blank lines
@@ -177,62 +167,11 @@ function updateAppTsx(enabledFeatures) {
 
 /**
  * Update providerFactory.ts to remove unused providers
+ * NOTE: Data provider pattern has been removed from this boilerplate
+ * This function is kept for backward compatibility but does nothing
  */
 function updateProviderFactory(enabledFeatures) {
-  const factoryPath = join(projectRoot, "src/shared/services/dataProviders/providerFactory.ts");
-  if (!existsSync(factoryPath)) {
-    return false;
-  }
-
-  let content = readFileSync(factoryPath, "utf-8");
-  const supabaseEnabled = enabledFeatures.includes("supabase");
-  const airtableEnabled = enabledFeatures.includes("airtable");
-
-  // Remove imports for disabled providers
-  if (!supabaseEnabled) {
-    content = content.replace(/import { isSupabaseConfigured } from "@shared\/services\/supabaseService";\s*\n/g, "");
-    content = content.replace(/import { SupabaseProvider } from "\.\/supabaseProvider";\s*\n/g, "");
-  }
-  if (!airtableEnabled) {
-    content = content.replace(/import { isAirtableConfigured } from "@shared\/services\/airtableService";\s*\n/g, "");
-    content = content.replace(/import { AirtableProvider } from "\.\/airtableProvider";\s*\n/g, "");
-  }
-
-  // Update getDataProvider function
-  if (!supabaseEnabled && !airtableEnabled) {
-    // Only browser storage
-    content = content.replace(
-      /export function getDataProvider\(\): DataProvider \{[\s\S]*?\}/,
-      `export function getDataProvider(): DataProvider {
-  return new BrowserStorageProvider();
-}`
-    );
-  } else if (!supabaseEnabled && airtableEnabled) {
-    // Airtable or browser storage
-    content = content.replace(
-      /export function getDataProvider\(\): DataProvider \{[\s\S]*?\}/,
-      `export function getDataProvider(): DataProvider {
-  if (isAirtableConfigured()) {
-    return new AirtableProvider();
-  }
-  return new BrowserStorageProvider();
-}`
-    );
-  } else if (supabaseEnabled && !airtableEnabled) {
-    // Supabase or browser storage
-    content = content.replace(
-      /export function getDataProvider\(\): DataProvider \{[\s\S]*?\}/,
-      `export function getDataProvider(): DataProvider {
-  if (isSupabaseConfigured()) {
-    return new SupabaseProvider();
-  }
-  return new BrowserStorageProvider();
-}`
-    );
-  }
-  // If both enabled, keep original logic
-
-  writeFileSync(factoryPath, content, "utf-8");
+  // Data provider pattern no longer exists in this boilerplate
   return true;
 }
 

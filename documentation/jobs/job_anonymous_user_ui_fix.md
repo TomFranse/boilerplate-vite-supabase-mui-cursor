@@ -210,3 +210,5 @@ const user = supabaseUserToUser(supabaseUser);
 - Consistent filtering across all code paths
 - Type-safe with TypeScript
 
+
+
