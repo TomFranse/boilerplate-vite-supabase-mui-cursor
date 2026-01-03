@@ -1,0 +1,69 @@
+import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
+import * as authService from "../services/authService";
+import { supabaseUserToUser } from "../utils/userUtils";
+import { isOAuthRedirectInProgress } from "../utils/oauthUtils";
+import type { User } from "../types/auth.types";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+
+/**
+ * Initialize authentication session
+ */
+const handleSessionResult = async (
+  session: { user: SupabaseUser } | null
+): Promise<User | null> => {
+  if (session?.user) {
+    return supabaseUserToUser(session.user);
+  }
+
+  const oauthRedirectInProgress = isOAuthRedirectInProgress();
+  if (!oauthRedirectInProgress) {
+    await authService.signInAnonymously();
+  }
+
+  return null;
+};
+
+export const initializeSession = async (): Promise<{
+  user: User | null;
+  error: string | null;
+}> => {
+  if (!isSupabaseConfigured()) {
+    return { user: null, error: null };
+  }
+
+  try {
+    const supabase = getSupabase();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const user = await handleSessionResult(session);
+    return { user, error: null };
+  } catch (err) {
+    return {
+      user: null,
+      error: err instanceof Error ? err.message : "Failed to initialize authentication",
+    };
+  }
+};
+
+/**
+ * Handle auth state change event
+ */
+export const handleAuthStateChange = async (
+  session: { user: SupabaseUser } | null
+): Promise<{ user: User | null; error: string | null }> => {
+  if (session?.user) {
+    const currentUser = supabaseUserToUser(session.user);
+    return { user: currentUser, error: null };
+  }
+
+  // User signed out - create anonymous session
+  try {
+    await authService.signInAnonymously();
+  } catch {
+    // Ignore anonymous sign-in errors
+  }
+
+  return { user: null, error: null };
+};

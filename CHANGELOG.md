@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.7] - 2026-01-03
+
+### Changed
+
+- Major complexity reduction refactoring across priority hotspots
+- Reduced code complexity and improved maintainability through modularization
+- Extracted shared components and hooks to reduce duplication
+
+### Technical
+
+- **ProfileMenu.tsx**: Reduced from 357 lines → 64 lines (82% reduction)
+  - Extracted 7 components, 2 hooks, and utility functions
+  - Complexity reduced from 42 → ~8
+- **dateFormatters.ts**: Refactored `formatRelativeTime()` using lookup pattern
+  - Reduced from 22 statements → 10 statements
+  - Complexity reduced from 14 → ~5, Cognitive: 18 → ~8
+- **SupabaseSection.tsx & AirtableSection.tsx**: Reduced from 217/211 lines → 87/81 lines
+  - Created shared components: `ConnectionTestResult`, `EnvVariablesDisplay`
+  - Created shared hooks: `useConnectionTest`, `useEnvWriter`
+  - Extracted form fields and description components
+- **useAuth.ts**: Reduced from 142 lines → 68 lines (52% reduction)
+  - Extracted utilities: `oauthUtils.ts`, `useAuthSession.ts`, `useAuthStateSubscription.ts`
+  - Extracted handlers: `useAuthHandlers.ts`, `authHandlerUtils.ts`
+- **useUserProfile.ts**: Extracted constants and helper functions
+  - Reduced statement count from 19 → 10 per function
+- **AuthCallbackPage.tsx**: Extracted utilities for better organization
+  - Created `authCallbackUtils.ts` and `authCallbackParams.ts`
+- Added ESLint complexity rules: `complexity`, `max-depth`, `max-lines-per-function`, `max-statements`, `max-params`, `sonarjs/cognitive-complexity`
+- All tests passing (53 tests)
+- All TypeScript errors resolved
+
 ## [0.5.6] - 2026-01-03
 
 ### Changed

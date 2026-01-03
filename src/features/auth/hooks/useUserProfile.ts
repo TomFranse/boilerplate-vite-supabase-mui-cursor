@@ -2,6 +2,43 @@ import { useState, useEffect } from "react";
 import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
 import type { User } from "../types/auth.types";
 
+const USER_PROFILE_FIELDS = `
+  id,
+  email,
+  display_name,
+  photo_url,
+  email_verified,
+  disabled,
+  role,
+  provider_ids,
+  creation_time,
+  last_sign_in_time,
+  updated_at,
+  remaining_credits,
+  credit_period,
+  auth_provider,
+  ef_nl_edu_person_home_organization,
+  ef_nl_edu_person_home_organization_id,
+  total_messages,
+  total_tokens,
+  total_cost,
+  settings
+`;
+
+const handleProfileFetchError = (
+  fetchError: { code?: string; message: string },
+  setProfile: (profile: UserProfile | null) => void,
+  setError: (error: string | null) => void
+) => {
+  if (fetchError.code === "PGRST116") {
+    setProfile(null);
+    setError(null);
+  } else {
+    setError(fetchError.message);
+    setProfile(null);
+  }
+};
+
 export type UserRole = "anonymous" | "free" | "premium" | "admin" | "super-admin";
 
 export interface UserProfile {
@@ -44,6 +81,27 @@ export const useUserProfile = (user: User | null): UseUserProfileReturn => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchProfileData = async () => {
+    const supabase = getSupabase();
+    const { data, error: fetchError } = await supabase
+      .from("users")
+      .select(USER_PROFILE_FIELDS)
+      .eq("id", user!.id)
+      .single();
+
+    if (fetchError) {
+      handleProfileFetchError(fetchError, setProfile, setError);
+    } else {
+      setProfile(data as UserProfile);
+    }
+  };
+
+  const handleFetchError = (err: unknown) => {
+    const errorMessage = err instanceof Error ? err.message : "Failed to fetch user profile";
+    setError(errorMessage);
+    setProfile(null);
+  };
+
   const fetchProfile = async () => {
     if (!user || !isSupabaseConfigured()) {
       setProfile(null);
@@ -53,53 +111,10 @@ export const useUserProfile = (user: User | null): UseUserProfileReturn => {
 
     setLoading(true);
     setError(null);
-
     try {
-      const supabase = getSupabase();
-      const { data, error: fetchError } = await supabase
-        .from("users")
-        .select(
-          `
-          id,
-          email,
-          display_name,
-          photo_url,
-          email_verified,
-          disabled,
-          role,
-          provider_ids,
-          creation_time,
-          last_sign_in_time,
-          updated_at,
-          remaining_credits,
-          credit_period,
-          auth_provider,
-          ef_nl_edu_person_home_organization,
-          ef_nl_edu_person_home_organization_id,
-          total_messages,
-          total_tokens,
-          total_cost,
-          settings
-        `
-        )
-        .eq("id", user.id)
-        .single();
-
-      if (fetchError) {
-        // If user doesn't exist in users table, that's okay - they might not have a profile yet
-        if (fetchError.code === "PGRST116") {
-          setProfile(null);
-          setError(null);
-        } else {
-          setError(fetchError.message);
-          setProfile(null);
-        }
-      } else {
-        setProfile(data as UserProfile);
-      }
+      await fetchProfileData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch user profile");
-      setProfile(null);
+      handleFetchError(err);
     } finally {
       setLoading(false);
     }

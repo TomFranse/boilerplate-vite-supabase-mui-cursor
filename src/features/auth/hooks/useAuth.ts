@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
-import * as authService from "../services/authService";
+import { useState, useEffect, useCallback } from "react";
+import { isSupabaseConfigured } from "@shared/services/supabaseService";
 import type { User, LoginCredentials, SignUpCredentials } from "../types/auth.types";
-import { supabaseUserToUser } from "../utils/userUtils";
+import { initializeSession } from "./useAuthSession";
+import { useAuthStateSubscription } from "./useAuthStateSubscription";
+import { useAuthHandlers } from "./useAuthHandlers";
 
 interface UseAuthReturn {
   user: User | null;
@@ -15,27 +16,18 @@ interface UseAuthReturn {
   signInWithEntreefederatie: () => Promise<void>;
 }
 
-/**
- * Detects if the current page load is returning from an OAuth/SAML redirect.
- */
-const isOAuthRedirectInProgress = (): boolean => {
-  const url = new URL(window.location.href);
-  const searchParams = url.searchParams;
-  const hash = url.hash;
-
-  // Check for OAuth/SAML callback parameters
-  const hasCode = searchParams.has("code");
-  const hasError = searchParams.has("error");
-  const hasAccessTokenInHash = hash.includes("access_token") || hash.includes("refresh_token");
-
-  return hasCode || hasError || hasAccessTokenInHash;
-};
-
 export const useAuth = (): UseAuthReturn => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const signInInFlightRef = useRef(false);
+
+  const handleUserChange = useCallback((newUser: User | null) => {
+    setUser(newUser);
+  }, []);
+
+  const handleLoadingChange = useCallback((newLoading: boolean) => {
+    setLoading(newLoading);
+  }, []);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -43,160 +35,34 @@ export const useAuth = (): UseAuthReturn => {
       return;
     }
 
-    const supabase = getSupabase();
-
-    // Get initial session
     const initAuth = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (session?.user) {
-          const currentUser = supabaseUserToUser(session.user);
-          setUser(currentUser);
-        } else {
-          // No session - check if we're returning from OAuth/SAML redirect
-          const oauthRedirectInProgress = isOAuthRedirectInProgress();
-
-          if (!oauthRedirectInProgress) {
-            // Create anonymous session for visitors
-            await authService.signInAnonymously();
-          }
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to initialize authentication");
-      } finally {
-        setLoading(false);
+      const { user: initialUser, error: initError } = await initializeSession();
+      if (initError) {
+        setError(initError);
+      } else {
+        setUser(initialUser);
       }
+      setLoading(false);
     };
 
     void initAuth();
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const currentUser = supabaseUserToUser(session.user);
-
-        // Clean up OAuth/SAML redirect parameters from URL
-        if (isOAuthRedirectInProgress()) {
-          const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-          window.history.replaceState({}, document.title, cleanUrl);
-        }
-
-        setUser(currentUser);
-        setLoading(false);
-      } else {
-        // User signed out - create anonymous session
-        setUser(null);
-        setLoading(true);
-        try {
-          await authService.signInAnonymously();
-        } catch {
-          // Ignore anonymous sign-in errors
-        } finally {
-          setLoading(false);
-        }
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
-  const handleLogin = async (credentials: LoginCredentials) => {
-    setLoading(true);
-    setError(null);
-    const { user: loggedInUser, error: loginError } = await authService.login(credentials);
-    if (loginError) {
-      setError(loginError.message);
-      setUser(null);
-    } else {
-      setUser(loggedInUser);
-      // Redirect will be handled by the component that calls login (has Router context)
-    }
-    setLoading(false);
-  };
+  useAuthStateSubscription({
+    onUserChange: handleUserChange,
+    onLoadingChange: handleLoadingChange,
+  });
 
-  const handleSignUp = async (credentials: SignUpCredentials) => {
-    setLoading(true);
-    setError(null);
-    const { user: signedUpUser, error: signUpError } = await authService.signUp(credentials);
-    if (signUpError) {
-      setError(signUpError.message);
-      setUser(null);
-    } else {
-      setUser(signedUpUser);
-      // Redirect will be handled by the component that calls signUp (has Router context)
-    }
-    setLoading(false);
-  };
-
-  const handleLogout = async () => {
-    setLoading(true);
-    setError(null);
-    const { error: logoutError } = await authService.logout();
-    if (logoutError) {
-      setError(logoutError.message);
-    } else {
-      setUser(null);
-    }
-    setLoading(false);
-  };
-
-  const handleSignInWithGoogle = async () => {
-    if (signInInFlightRef.current) {
-      return;
-    }
-    signInInFlightRef.current = true;
-    try {
-      setLoading(true);
-      setError(null);
-      const { error: signInError } = await authService.signInWithGoogle();
-      if (signInError) {
-        setError(signInError.message);
-      }
-      // Auth state change handler will update user
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to sign in with Google");
-    } finally {
-      setLoading(false);
-      signInInFlightRef.current = false;
-    }
-  };
-
-  const handleSignInWithEntreefederatie = async () => {
-    if (signInInFlightRef.current) {
-      return;
-    }
-    signInInFlightRef.current = true;
-    try {
-      setLoading(true);
-      setError(null);
-      const { error: signInError } = await authService.signInWithEntreefederatie();
-      if (signInError) {
-        setError(signInError.message);
-      }
-      // Redirect will happen in authService
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to sign in with Entreefederatie");
-    } finally {
-      setLoading(false);
-      signInInFlightRef.current = false;
-    }
-  };
+  const handlers = useAuthHandlers({
+    setUser,
+    setLoading,
+    setError,
+  });
 
   return {
     user,
     loading,
     error,
-    login: handleLogin,
-    signUp: handleSignUp,
-    logout: handleLogout,
-    signInWithGoogle: handleSignInWithGoogle,
-    signInWithEntreefederatie: handleSignInWithEntreefederatie,
+    ...handlers,
   };
 };

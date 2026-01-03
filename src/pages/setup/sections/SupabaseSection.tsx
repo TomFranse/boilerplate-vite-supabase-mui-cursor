@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { Box, TextField, Alert, Typography, Card, CardContent, Button } from "@mui/material";
-import { CheckCircle, Error as ErrorIcon, ContentCopy } from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
 import { SetupCard } from "../components/SetupCard";
 import { SetupDialog } from "../components/SetupDialog";
+import { ConnectionTestResult } from "../components/ConnectionTestResult";
+import { EnvVariablesDisplay } from "../components/EnvVariablesDisplay";
+import { SupabaseFormFields } from "../components/SupabaseFormFields";
+import { SupabaseDescription } from "../components/SupabaseDescription";
+import { useConnectionTest } from "../hooks/useConnectionTest";
+import { useEnvWriter } from "../hooks/useEnvWriter";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
 import { testSupabaseConnection } from "@shared/services/supabaseService";
 import { updateSetupSectionStatus, getSetupSectionsState } from "@utils/setupUtils";
@@ -43,86 +48,44 @@ interface SupabaseDialogProps {
 const SupabaseDialog = ({ open, onClose, onStatusChange }: SupabaseDialogProps) => {
   const [supabaseUrl, setSupabaseUrl] = useState("");
   const [supabaseKey, setSupabaseKey] = useState("");
-  const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{ success: boolean; error?: string } | null>(null);
-  const [envWritten, setEnvWritten] = useState(false);
-  const [writingEnv, setWritingEnv] = useState(false);
-  const [copied, setCopied] = useState(false);
 
-  const handleWriteEnv = async () => {
-    if (!supabaseUrl || !supabaseKey) {
+  const testConnection = useConnectionTest({
+    onTest: async () => {
+      if (!supabaseUrl || !supabaseKey) {
+        return { success: false, error: "Please enter both URL and API key" };
+      }
+      return await testSupabaseConnection(supabaseUrl, supabaseKey);
+    },
+  });
+
+  const envWriter = useEnvWriter({
+    onError: (error) => {
+      testConnection.setTestResult({ success: false, error });
+    },
+  });
+
+  const handleSave = async () => {
+    if (!testConnection.testResult?.success) {
+      await testConnection.runTest();
+      if (testConnection.testResult?.success) {
+        await envWriter.writeEnv({
+          VITE_SUPABASE_URL: supabaseUrl,
+          VITE_SUPABASE_PUBLISHABLE_KEY: supabaseKey,
+        });
+      }
       return;
     }
 
-    setWritingEnv(true);
-    try {
-      const response = await fetch("/api/write-env", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          VITE_SUPABASE_URL: supabaseUrl,
-          VITE_SUPABASE_PUBLISHABLE_KEY: supabaseKey,
-        }),
+    if (!envWriter.envWritten) {
+      await envWriter.writeEnv({
+        VITE_SUPABASE_URL: supabaseUrl,
+        VITE_SUPABASE_PUBLISHABLE_KEY: supabaseKey,
       });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setEnvWritten(true);
-      } else {
-        setTestResult({
-          success: false,
-          error: data.message || "Failed to write environment variables",
-        });
-      }
-    } catch (error) {
-      setTestResult({
-        success: false,
-        error: error instanceof Error ? error.message : "Failed to write environment variables",
-      });
-    } finally {
-      setWritingEnv(false);
+      return;
     }
-  };
 
-  const handleCopyEnv = () => {
-    const envContent = `VITE_SUPABASE_URL=${supabaseUrl}
-VITE_SUPABASE_PUBLISHABLE_KEY=${supabaseKey}
-# Legacy: VITE_SUPABASE_ANON_KEY also works for backward compatibility`;
-    void navigator.clipboard.writeText(envContent);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSave = async () => {
-    // If not tested or env not written, test first
-    if (!testResult?.success || !envWritten) {
-      if (!supabaseUrl || !supabaseKey) {
-        setTestResult({ success: false, error: "Please enter both URL and API key" });
-        return;
-      }
-
-      setTesting(true);
-      setTestResult(null);
-      setEnvWritten(false);
-
-      const result = await testSupabaseConnection(supabaseUrl, supabaseKey);
-      setTestResult(result);
-      setTesting(false);
-
-      if (result.success) {
-        await handleWriteEnv();
-        // After writing env, mark as completed
-        updateSetupSectionStatus("supabase", "completed");
-        onStatusChange?.();
-      }
-    } else {
-      // Already tested and written, just mark as completed
-      updateSetupSectionStatus("supabase", "completed");
-      onStatusChange?.();
-    }
+    updateSetupSectionStatus("supabase", "completed");
+    onStatusChange?.();
   };
 
   const handleSkip = () => {
@@ -137,134 +100,38 @@ VITE_SUPABASE_PUBLISHABLE_KEY=${supabaseKey}
       onClose={onClose}
       onSave={handleSave}
       title="Connect to Supabase"
-      saveButtonText={testResult?.success && envWritten ? "Save" : "Test & Save"}
-      saveButtonDisabled={!supabaseUrl || !supabaseKey || testing || writingEnv}
+      saveButtonText={
+        testConnection.testResult?.success && envWriter.envWritten ? "Save" : "Test & Save"
+      }
+      saveButtonDisabled={
+        !supabaseUrl || !supabaseKey || testConnection.testing || envWriter.writingEnv
+      }
     >
       <Box>
-        <Typography variant="body2" color="text.secondary" paragraph>
-          Enter your Supabase project URL and publishable key to connect your app. This enables user
-          authentication and allows you to use cloud database features. If you don't have a Supabase
-          project yet,{" "}
-          <Typography
-            component="a"
-            href="https://supabase.com"
-            target="_blank"
-            rel="noopener"
-            sx={{ color: "primary.main", textDecoration: "underline" }}
-          >
-            create a free account
-          </Typography>
-          . You can skip this step and configure it later if you prefer to use browser storage for
-          now.
-        </Typography>
+        <SupabaseDescription />
 
-        <Box sx={{ my: 3 }}>
-          <TextField
-            label="Supabase Project URL"
-            value={supabaseUrl}
-            onChange={(e) => setSupabaseUrl(e.target.value)}
-            fullWidth
-            margin="normal"
-            placeholder="https://your-project.supabase.co"
-            helperText="Find this in your Supabase project settings under API"
+        <SupabaseFormFields
+          url={supabaseUrl}
+          key={supabaseKey}
+          onUrlChange={setSupabaseUrl}
+          onKeyChange={setSupabaseKey}
+        />
+
+        <ConnectionTestResult
+          result={testConnection.testResult}
+          envWritten={envWriter.envWritten}
+          writingEnv={envWriter.writingEnv}
+        />
+
+        {testConnection.testResult?.success && envWriter.envWritten && (
+          <EnvVariablesDisplay
+            variables={[
+              { name: "VITE_SUPABASE_URL", value: supabaseUrl },
+              { name: "VITE_SUPABASE_PUBLISHABLE_KEY", value: supabaseKey },
+            ]}
+            description={"These values have been written to your .env file:"}
+            showRestartWarning={true}
           />
-          <TextField
-            label="Supabase Publishable Key"
-            value={supabaseKey}
-            onChange={(e) => setSupabaseKey(e.target.value)}
-            fullWidth
-            margin="normal"
-            type="password"
-            placeholder="your-publishable-key"
-            helperText="Find this in your Supabase project settings under API (previously called 'anon key')"
-          />
-        </Box>
-
-        {testResult && (
-          <Alert
-            severity={testResult.success ? "success" : "error"}
-            icon={testResult.success ? <CheckCircle /> : <ErrorIcon />}
-            sx={{ mb: 2 }}
-          >
-            {testResult.success
-              ? envWritten
-                ? "Connection successful and environment variables saved!"
-                : writingEnv
-                  ? "Writing environment variables..."
-                  : "Connection successful! Writing environment variables..."
-              : `Connection failed: ${testResult.error}`}
-          </Alert>
-        )}
-
-        {envWritten && (
-          <Alert severity="warning" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              <strong>Important:</strong> Environment variables have been written to your{" "}
-              <Typography component="code" sx={{ bgcolor: "grey.200", px: 0.5, borderRadius: 0.5 }}>
-                .env
-              </Typography>{" "}
-              file. Please <strong>restart your development server</strong> for the changes to take
-              effect.
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Stop the server (Ctrl+C) and run <code>pnpm dev</code> again.
-            </Typography>
-          </Alert>
-        )}
-
-        {testResult?.success && envWritten && (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Environment Variables
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              These values have been written to your{" "}
-              <Typography component="code" sx={{ bgcolor: "grey.200", px: 0.5, borderRadius: 0.5 }}>
-                .env
-              </Typography>{" "}
-              file:
-            </Typography>
-            <Card variant="outlined" sx={{ mb: 2 }}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      component="code"
-                      sx={{
-                        display: "block",
-                        mb: 1,
-                        bgcolor: "grey.200",
-                        px: 0.5,
-                        borderRadius: 0.5,
-                      }}
-                    >
-                      VITE_SUPABASE_URL={supabaseUrl}
-                    </Typography>
-                    <Typography
-                      component="code"
-                      sx={{ display: "block", bgcolor: "grey.200", px: 0.5, borderRadius: 0.5 }}
-                    >
-                      VITE_SUPABASE_PUBLISHABLE_KEY={supabaseKey}
-                    </Typography>
-                  </Box>
-                  <Button
-                    startIcon={<ContentCopy />}
-                    onClick={handleCopyEnv}
-                    variant="outlined"
-                    size="small"
-                  >
-                    {copied ? "Copied!" : "Copy"}
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
         )}
 
         <Box sx={{ mt: 2 }}>

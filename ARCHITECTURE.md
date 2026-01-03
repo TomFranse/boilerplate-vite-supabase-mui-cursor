@@ -173,6 +173,28 @@ import { useTodos } from "@features/todos/hooks/useTodos";  // ❌ Common import
 
 This project uses three complementary tools for code quality and formatting: **GTS**, **ESLint**, and **Prettier**. Understanding their roles and how they work together is crucial for maintaining code consistency.
 
+### Complexity Management
+
+The project enforces complexity thresholds to maintain code maintainability:
+
+- **Cyclomatic Complexity**: ≤ 10 per function (ESLint `complexity`)
+- **Cognitive Complexity**: ≤ 15 per function (`sonarjs/cognitive-complexity`)
+- **Nesting Depth**: ≤ 4 levels (ESLint `max-depth`)
+- **Function Length**: ≤ 50 lines (ESLint `max-lines-per-function`)
+- **Statements**: ≤ 10 per function (ESLint `max-statements`)
+- **Parameters**: ≤ 3 per function (ESLint `max-params`)
+
+**Refactoring Patterns Used:**
+- **Extract Method/Function**: Break long functions into smaller, focused functions
+- **Extract Component**: Split large React components into smaller sub-components
+- **Extract Hook**: Move complex logic from components into custom hooks
+- **Extract Utility**: Create utility modules for reusable logic
+- **Replace Conditional with Lookup**: Use data structures instead of long if-else chains
+- **Guard Clauses**: Early returns to reduce nesting depth
+- **Parameter Objects**: Group related parameters into objects
+
+When complexity violations are detected, refactor using these patterns to improve maintainability and testability.
+
 ### The Three Tools
 
 #### 1. **ESLint** (The Engine)

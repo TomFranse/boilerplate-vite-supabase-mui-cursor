@@ -22,6 +22,17 @@ A modern, production-ready boilerplate for building React applications with Type
 - **pnpm** 8.x or higher (recommended) or npm/yarn
 - **Supabase Account** (optional) - [Sign up here](https://supabase.com) if you want to use authentication and database features
 
+### Windows Users: Configure Line Endings
+
+**IMPORTANT:** Configure Cursor to use Linux line endings!
+
+This ensures that every new file you create uses Linux endings, and existing files don't get converted back to Windows endings when you save them.
+
+1. Open Cursor
+2. Press `Ctrl + ,` to open Settings
+3. Search for `files.eol`
+4. Change the setting from `auto` (or `\r\n`) to `\n`
+
 ## Quick Start Guide
 
 ### Step 1: Clone and Install

@@ -1,6 +1,7 @@
 import gtsConfig from './node_modules/gts/build/src/index.js';
 import ignores from './eslint.ignores.js';
 import {defineConfig} from 'eslint/config';
+import sonarjs from 'eslint-plugin-sonarjs';
 
 export default defineConfig([
   {
@@ -12,6 +13,9 @@ export default defineConfig([
   },
   ...gtsConfig,
   {
+    plugins: {
+      sonarjs,
+    },
     languageOptions: {
       parserOptions: {
         // Only use tsconfig.app.json - it's the actual app config
@@ -27,6 +31,13 @@ export default defineConfig([
       // Disable React import requirement (using new JSX transform with jsx: "react-jsx")
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
+      // Complexity rules - set to warn for existing code
+      complexity: ['warn', { max: 10 }],
+      'max-depth': ['warn', { max: 4 }],
+      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
+      'max-statements': ['warn', { max: 10 }],
+      'max-params': ['warn', { max: 3 }],
+      'sonarjs/cognitive-complexity': ['warn', 15],
     },
   },
   // Prevent feature components from importing hooks or services

@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Typography, CircularProgress } from "@mui/material";
-import { isSupabaseConfigured } from "@shared/services/supabaseService";
-import * as authService from "@features/auth/services/authService";
-import { getAndClearRedirectPath } from "@utils/redirectUtils";
+import {
+  checkSupabaseConfigured,
+  handleAuthError,
+  handleCodeExchange,
+  getRedirectPath,
+} from "./utils/authCallbackUtils";
+import { getAuthCallbackParams } from "./utils/authCallbackParams";
 
 /**
  * AuthCallbackPage handles OAuth/SAML redirects from Supabase.
@@ -15,42 +19,21 @@ export const AuthCallbackPage = () => {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      if (!isSupabaseConfigured()) {
-        void navigate("/", { replace: true });
-        return;
-      }
+      if (!checkSupabaseConfigured(navigate)) return;
 
-      // Check for error parameters
-      const error = searchParams.get("error");
-      const code = searchParams.get("code");
+      const { error, code } = getAuthCallbackParams(searchParams);
 
       if (error) {
-        // Redirect to home - error will be shown by auth context
-        void navigate("/", { replace: true });
+        handleAuthError(navigate);
         return;
       }
 
       if (code) {
-        try {
-          const { error: exchangeError } = await authService.exchangeCodeForSession(code);
-
-          if (exchangeError) {
-            void navigate("/", { replace: true });
-            return;
-          }
-
-          // Success - redirect to stored path or home
-          const redirectPath = getAndClearRedirectPath();
-          void navigate(redirectPath || "/", { replace: true });
-          return;
-        } catch {
-          void navigate("/", { replace: true });
-          return;
-        }
+        await handleCodeExchange(code, navigate);
+        return;
       }
 
-      // No auth params - redirect to home
-      void navigate("/", { replace: true });
+      void navigate(getRedirectPath(), { replace: true });
     };
 
     void handleAuthCallback();

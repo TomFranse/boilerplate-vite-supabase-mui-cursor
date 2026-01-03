@@ -21,46 +21,95 @@ export function formatDate(
 }
 
 /**
+ * Time unit configuration for relative time formatting
+ */
+interface TimeUnit {
+  minSeconds: number;
+  maxSeconds: number;
+  label: string;
+  calculateDiff: (diffInSeconds: number) => number;
+}
+
+/**
+ * Pluralize a word based on count
+ */
+const pluralize = (count: number, singular: string, plural: string): string => {
+  return count === 1 ? singular : plural;
+};
+
+/**
+ * Calculate time difference in seconds
+ */
+const calculateTimeDifference = (dateObj: Date): number => {
+  const now = new Date();
+  return Math.floor((now.getTime() - dateObj.getTime()) / 1000);
+};
+
+/**
+ * Time units ordered from smallest to largest
+ */
+const TIME_UNITS: TimeUnit[] = [
+  {
+    minSeconds: 60,
+    maxSeconds: 3600,
+    label: "minute",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 60),
+  },
+  {
+    minSeconds: 3600,
+    maxSeconds: 86400,
+    label: "hour",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 3600),
+  },
+  {
+    minSeconds: 86400,
+    maxSeconds: 604800,
+    label: "day",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 86400),
+  },
+  {
+    minSeconds: 604800,
+    maxSeconds: 2592000,
+    label: "week",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 604800),
+  },
+  {
+    minSeconds: 2592000,
+    maxSeconds: 31536000,
+    label: "month",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 2592000),
+  },
+  {
+    minSeconds: 31536000,
+    maxSeconds: Infinity,
+    label: "year",
+    calculateDiff: (diffInSeconds) => Math.floor(diffInSeconds / 31536000),
+  },
+];
+
+/**
  * Formats a date to a relative time string (e.g., "2 hours ago")
  * @param date - Date object or ISO string
  * @returns Relative time string
  */
 export function formatRelativeTime(date: Date | string): string {
   const dateObj = typeof date === "string" ? new Date(date) : date;
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
+  const diffInSeconds = calculateTimeDifference(dateObj);
 
   if (diffInSeconds < 60) {
     return "just now";
   }
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes > 1 ? "s" : ""} ago`;
+  for (const unit of TIME_UNITS) {
+    if (diffInSeconds >= unit.minSeconds && diffInSeconds < unit.maxSeconds) {
+      const diff = unit.calculateDiff(diffInSeconds);
+      return `${diff} ${pluralize(diff, unit.label, `${unit.label}s`)} ago`;
+    }
   }
 
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) {
-    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInWeeks = Math.floor(diffInDays / 7);
-  if (diffInWeeks < 4) {
-    return `${diffInWeeks} week${diffInWeeks > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) {
-    return `${diffInMonths} month${diffInMonths > 1 ? "s" : ""} ago`;
-  }
-
-  const diffInYears = Math.floor(diffInDays / 365);
-  return `${diffInYears} year${diffInYears > 1 ? "s" : ""} ago`;
+  // Fallback for years (should handle any edge cases)
+  const diff = Math.floor(diffInSeconds / 31536000);
+  return `${diff} ${pluralize(diff, "year", "years")} ago`;
 }
 
 /**
