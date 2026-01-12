@@ -7,33 +7,35 @@ This document explains the architectural decisions and rules enforced in this bo
 ```
 src/
 ├── assets/              # Static assets (images, etc.)
-├── common/              # Reusable UI components (pure components)
-│   ├── Button/
-│   ├── Card/
-│   ├── Input/
-│   └── Modal/
-├── components/          # App-level components (Topbar, ProfileMenu, ProtectedRoute, etc.)
+├── components/          # App-level components
+│   └── common/          # Reusable UI components (pure components)
+│       ├── Button/
+│       ├── Card/
+│       ├── Input/
+│       ├── Modal/
+│       ├── ProfileMenu/
+│       └── Topbar.tsx
 ├── config/              # Configuration files (Entreefederatie, etc.)
 ├── features/            # Feature modules (business logic)
 │   ├── auth/
 │   │   ├── components/  # Feature-specific UI components
 │   │   ├── hooks/       # React hooks for feature logic
 │   │   ├── services/    # Pure functions, API calls
-│   │   ├── types/       # TypeScript types for feature
-│   │   └── utils/       # Feature-specific utility functions
+│   │   └── types/       # TypeScript types for feature
 │   ├── setup/
 │   │   ├── components/  # Setup wizard UI components
+│   │   │   └── sections/ # Setup section components
 │   │   ├── hooks/       # Setup-related hooks
-│   │   ├── services/    # Setup-related services (API calls)
-│   │   └── sections/   # Setup section components
-├── layouts/             # Layout components (MainLayout)
+│   │   └── services/    # Setup-related services (API calls)
+├── layouts/             # Layout components
+│   └── MainLayout/      # Main layout component
 ├── pages/               # Route-level page components
-├── store/               # Global state management
-│   └── contexts/        # React contexts (AuthContext, etc.)
 ├── shared/              # Shared across features
+│   ├── context/         # React contexts (AuthContext, etc.)
 │   ├── hooks/           # Shared hooks (useSupabaseConfig, etc.)
 │   ├── services/        # Shared services (Supabase client, Airtable client)
 │   ├── types/           # Shared types
+│   ├── utils/           # Shared utility functions
 │   └── theme/           # MUI theme configuration
 │       ├── defaultTheme.ts    # Default theme (preserved)
 │       ├── themeLoader.ts      # Theme loading and persistence
