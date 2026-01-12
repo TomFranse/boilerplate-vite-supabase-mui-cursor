@@ -351,12 +351,13 @@ This boilerplate includes a **dev-only app code modification** feature that allo
 The feature consists of three main components:
 
 1. **Vite Plugin** (`vite-plugin-dev-api.ts`):
-   - Provides dev-only API endpoints: `/api/write-env` and `/api/finish-setup`
+   - Provides dev-only API endpoints: `/api/write-env`, `/api/write-config`, and `/api/finish-setup`
    - Only works when running Vite dev server (not in production)
    - Located at project root (required for Vite plugin configuration)
 
 2. **Services** (`src/features/setup/services/`):
    - `envWriterService.ts`: Handles environment variable writing API calls
+   - `configService.ts`: Handles app configuration file (`app.config.json`) syncing
    - `setupService.ts`: Handles finish setup API calls
 
 3. **Scripts** (`scripts/finish-setup.js`):
@@ -373,9 +374,24 @@ The feature consists of three main components:
 The feature is primarily used by the setup wizard:
 
 - **Environment Variables**: `useEnvWriter` hook calls `writeEnvVariables` service
+- **Configuration Sync**: Automatically syncs to `app.config.json` when configuration changes
 - **Code Cleanup**: `useSetupFinish` hook calls `finishSetup` service which triggers code modification
 
-For more details, see `documentation/APP_CODE_MODIFICATION.md`.
+### App Configuration File
+
+The app maintains `app.config.json` which stores:
+- Setup section statuses and enabled features
+- API configuration references (without sensitive keys)
+- Theme configuration status
+- Last updated timestamp
+
+This file is readable by Cursor agent and syncs when finishing setup (before cleanup runs). Call `syncConfiguration()` manually for ad-hoc syncing.
+
+**Security**: API keys are NOT stored in this file - they remain in `.env`. The config file only contains references and metadata.
+
+For more details, see:
+- `documentation/APP_CODE_MODIFICATION.md` - Code modification feature
+- `documentation/APP_CONFIG_FILE.md` - Configuration file documentation
 
 ## Best Practices
 

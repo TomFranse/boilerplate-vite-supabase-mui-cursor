@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
  * 
  * This plugin enables the UI to modify app code and configuration files:
  * - /api/write-env: Write environment variables to .env file
+ * - /api/write-config: Write app configuration to app.config.json
  * - /api/finish-setup: Finish setup and clean up unused code
  * 
  * Security: These endpoints only work in development mode (Vite dev server)
@@ -171,6 +172,52 @@ export function devApiPlugin(): Plugin {
             res.end(
               JSON.stringify({
                 error: "Failed to write environment variables",
+                message: error instanceof Error ? error.message : String(error),
+              })
+            );
+          }
+        });
+      });
+
+      // Write config endpoint - writes app.config.json
+      server.middlewares.use("/api/write-config", (req, res, next) => {
+        // Only allow POST requests
+        if (req.method !== "POST") {
+          res.writeHead(405, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        let body = "";
+        req.on("data", (chunk) => {
+          body += chunk.toString();
+        });
+
+        req.on("end", () => {
+          try {
+            const config = JSON.parse(body);
+
+            // Validate config structure
+            if (!config.version || !config.setup || !config.configurations) {
+              throw new Error("Invalid configuration structure");
+            }
+
+            // Write to app.config.json
+            const configPath = path.resolve(process.cwd(), "app.config.json");
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                success: true,
+                message: "Configuration written successfully",
+              })
+            );
+          } catch (error) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(
+              JSON.stringify({
+                error: "Failed to write configuration",
                 message: error instanceof Error ? error.message : String(error),
               })
             );

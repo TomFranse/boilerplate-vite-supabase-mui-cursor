@@ -5,6 +5,10 @@
  * to write VITE_ prefixed environment variables to the .env file.
  *
  * Security: Only works in development mode (Vite dev server)
+ *
+ * Note: Config file sync is NOT done here because env vars require a server
+ * restart before they're available. Config sync happens when setup section
+ * status changes (which captures the state after restart).
  */
 
 export interface WriteEnvResponse {

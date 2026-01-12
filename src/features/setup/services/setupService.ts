@@ -1,4 +1,5 @@
 import { getEnabledFeatures } from "@utils/setupUtils";
+import { syncConfiguration } from "./configService";
 
 /**
  * Service for setup-related API calls.
@@ -7,6 +8,13 @@ import { getEnabledFeatures } from "@utils/setupUtils";
 export const finishSetup = async (): Promise<void> => {
   // Mark setup as complete
   localStorage.setItem("setup_complete", "true");
+
+  // Sync configuration BEFORE cleanup runs
+  // This saves the user's configuration state before the cleanup script
+  // removes setup files and unused feature code
+  await syncConfiguration().catch(() => {
+    // Silently fail - config sync is not critical for finish setup
+  });
 
   // Call cleanup script endpoint
   const response = await fetch("/api/finish-setup", {

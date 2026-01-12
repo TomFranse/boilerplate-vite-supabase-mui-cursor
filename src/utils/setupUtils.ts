@@ -33,6 +33,9 @@ export const getSetupSectionsState = (): SetupSectionsState => {
 
 /**
  * Update a specific section's status
+ *
+ * Note: This function does NOT automatically sync to app.config.json.
+ * Call syncConfiguration() separately after making changes if needed.
  */
 export const updateSetupSectionStatus = (sectionId: SetupSectionId, status: SetupStatus): void => {
   const currentState = getSetupSectionsState();

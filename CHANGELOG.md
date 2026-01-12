@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **App Configuration File (`app.config.json`)**: Configuration state syncing
+  - File stores setup section statuses, enabled features, and API references
+  - Syncs when finishing setup wizard (before cleanup runs)
+  - Readable by Cursor agent and team members to understand app configuration
+  - Security: API keys remain in `.env`, config file only contains references
+  - Added `/api/write-config` endpoint to vite-plugin-dev-api
+  - Created `configService.ts` for managing configuration sync
+  - Committed to version control (no secrets, useful for team context)
 - **App Code Modification Feature**: Formalized dev-only code modification capability
   - Renamed `vite-plugin-env-writer.ts` → `vite-plugin-dev-api.ts` for clarity
   - Extracted `envWriterService.ts` from `useEnvWriter` hook for better separation
