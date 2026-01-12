@@ -7,6 +7,9 @@ pnpm test:run
 # Type check
 pnpm type-check
 
+# Build check - ensures production build succeeds
+pnpm build
+
 # Validate project structure
 pnpm validate:structure
 
