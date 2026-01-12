@@ -305,11 +305,23 @@ rules: {
 
 ## ESLint Rules
 
-The project uses ESLint rules to enforce architecture:
+The project uses ESLint rules to enforce architecture and code quality:
+
+### Architecture Enforcement Rules
 
 - Prevents components from importing services directly
 - Prevents hooks from importing components
 - Prevents common components from importing features
+
+### Code Quality Rules
+
+- **Hardcoded Styling Detection**: Detects hardcoded styling values in `sx` props
+  - Catches hardcoded `fontSize`, `fontWeight`, `fontFamily`, `color`, `bgcolor`, `backgroundColor`, `borderColor` values
+  - Detects hex colors (`#...`) and RGB/RGBA colors
+  - Detects numeric literals for `fontSize`, `fontWeight`, `height`, `width` properties
+  - Works at both root and nested property levels
+  - Excludes theme files (they are where styling SHOULD be defined)
+  - Encourages use of theme constants from `src/shared/theme/defaultTheme.ts`
 
 These rules are defined in `eslint.config.js` using GTS's flat config format.
 

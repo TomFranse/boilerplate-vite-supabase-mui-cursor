@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **ESLint Hardcoded Styling Detection**: Added ESLint rules to detect hardcoded styling values in `sx` props
+  - Detects hardcoded `fontSize`, `fontWeight`, `fontFamily`, `color`, `bgcolor`, `backgroundColor`, `borderColor` values
+  - Detects hex colors (`#...`) and RGB/RGBA colors in `sx` props
+  - Detects numeric literals for `fontSize`, `fontWeight`, `height`, `width` properties
+  - Catches styling at both root and nested property levels
+  - Excludes theme files from rules (they are where styling SHOULD be defined)
+  - Encourages developers to use theme constants instead of hardcoded values
+  - All violations reported as warnings (non-blocking)
 - **View Configuration Feature**: Added read-only configuration view for all setup sections
   - "View Configuration" button appears when a section is completed
   - Displays configuration details from `app.config.json` in a dialog
