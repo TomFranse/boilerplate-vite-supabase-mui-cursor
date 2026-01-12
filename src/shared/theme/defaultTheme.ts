@@ -79,6 +79,16 @@ export const defaultThemeOptions: ThemeOptions = {
       fontFamily: "Montserrat, sans-serif",
       fontWeight: 700,
     },
+    // Use MUI's built-in body2 variant for code text (0.875rem)
+    // Keep Montserrat for consistency across the app
+    body2: {
+      fontSize: "0.875rem",
+    },
+    // Use MUI's built-in caption variant for small text
+    // Customize fontSize to 0.65rem for small chips
+    caption: {
+      fontSize: "0.65rem",
+    },
   },
   components: {
     // AppBar styling
@@ -188,12 +198,12 @@ export const defaultThemeOptions: ThemeOptions = {
     MuiCssBaseline: {
       styleOverrides: {
         code: ({ theme }: { theme: Theme }) => ({
-          fontFamily: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+          fontFamily: theme.typography.fontFamily, // Use Montserrat for consistency
           backgroundColor: theme.palette.background.default,
           color: theme.palette.text.primary,
         }),
         pre: ({ theme }: { theme: Theme }) => ({
-          fontFamily: "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+          fontFamily: theme.typography.fontFamily, // Use Montserrat for consistency
           backgroundColor: theme.palette.background.default,
           color: theme.palette.text.primary,
         }),
@@ -217,8 +227,18 @@ export const defaultThemeOptions: ThemeOptions = {
             color: theme.palette.text.primary,
             padding: "2px 4px",
             borderRadius: 1,
-            fontSize: "0.875rem",
+            fontSize: theme.typography.body2.fontSize,
+            fontFamily: theme.typography.fontFamily, // Use Montserrat for consistency
           },
+        }),
+      },
+    },
+    // Chip component styling - small chips with custom height
+    MuiChip: {
+      styleOverrides: {
+        sizeSmall: ({ theme }: { theme: Theme }) => ({
+          height: 20, // Fixed height for small chips
+          fontSize: theme.typography.caption.fontSize,
         }),
       },
     },

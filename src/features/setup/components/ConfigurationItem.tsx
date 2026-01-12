@@ -22,7 +22,9 @@ export const ConfigurationItem = ({
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(value);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(value);
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -49,7 +51,7 @@ export const ConfigurationItem = ({
           component="code"
           sx={{
             flex: 1,
-            fontSize: "0.875rem",
+            fontSize: (theme) => theme.typography.body2.fontSize,
             wordBreak: "break-all",
           }}
         >

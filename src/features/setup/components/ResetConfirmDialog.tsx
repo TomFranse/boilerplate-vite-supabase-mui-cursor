@@ -37,7 +37,7 @@ export const ResetConfirmDialog = ({
           This will remove all {sectionName} configuration settings including environment variables.
           You will need to reconfigure {sectionName} from scratch.
         </DialogContentText>
-        <DialogContentText sx={{ mt: 2, fontWeight: 600 }}>
+        <DialogContentText sx={{ mt: 2, fontWeight: (theme) => theme.typography.fontWeightBold }}>
           This action cannot be undone.
         </DialogContentText>
       </DialogContent>

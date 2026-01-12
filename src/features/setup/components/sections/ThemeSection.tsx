@@ -126,8 +126,8 @@ const ThemeDialogContent = ({
             alignItems: "flex-start",
           },
           "& .MuiInputBase-input": {
-            fontFamily: "monospace",
-            fontSize: "0.875rem",
+            fontFamily: (theme) => theme.typography.fontFamily, // Use Montserrat for consistency
+            fontSize: (theme) => theme.typography.body2.fontSize,
             overflow: "auto !important",
             height: "100% !important",
             resize: "none",

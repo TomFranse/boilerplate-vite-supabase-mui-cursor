@@ -41,7 +41,7 @@ export const SensitiveDataDisplay = ({
           component="code"
           sx={{
             flex: 1,
-            fontSize: "0.875rem",
+            fontSize: (theme) => theme.typography.body2.fontSize,
             color: isSet ? "text.primary" : "text.disabled",
           }}
         >

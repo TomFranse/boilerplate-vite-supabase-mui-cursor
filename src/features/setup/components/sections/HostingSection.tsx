@@ -158,7 +158,7 @@ const HostingDialog = ({ open, onClose, onStatusChange }: HostingDialogProps) =>
               mt: 1,
               p: 1,
               borderRadius: 1,
-              fontSize: "0.875rem",
+              fontSize: (theme) => theme.typography.body2.fontSize,
             }}
           >
             VITE_SUPABASE_URL=your-project-url{"\n"}

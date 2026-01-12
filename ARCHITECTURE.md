@@ -322,6 +322,8 @@ The project uses ESLint rules to enforce architecture and code quality:
   - Works at both root and nested property levels
   - Excludes theme files (they are where styling SHOULD be defined)
   - Encourages use of theme constants from `src/shared/theme/defaultTheme.ts`
+  - Components should use direct theme access: `theme.typography.body2.fontSize`, `theme.spacing(5)`, etc.
+  - Follows MUI best practices: use built-in typography variants (`body2`, `caption`) and theme spacing system
 
 These rules are defined in `eslint.config.js` using GTS's flat config format.
 

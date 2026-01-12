@@ -77,8 +77,8 @@ export const SetupCard = ({ title, description, status, onClick }: SetupCardProp
           <Avatar
             sx={{
               bgcolor: config.avatarColor,
-              width: 40,
-              height: 40,
+              width: (theme) => theme.spacing(5),
+              height: (theme) => theme.spacing(5),
             }}
           >
             {config.icon}

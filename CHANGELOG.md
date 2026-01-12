@@ -17,6 +17,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Excludes theme files from rules (they are where styling SHOULD be defined)
   - Encourages developers to use theme constants instead of hardcoded values
   - All violations reported as warnings (non-blocking)
+
+### Fixed
+
+- **Hardcoded Styling Values**: Replaced all hardcoded styling values with theme references
+  - Replaced hardcoded `fontSize` values (`0.875rem`, `0.65rem`, `16px`) with `theme.typography.body2.fontSize` and `theme.typography.caption.fontSize`
+  - Replaced hardcoded `fontWeight` values (`500`, `600`) with `theme.typography.fontWeightMedium` and `theme.typography.fontWeightBold`
+  - Replaced hardcoded pixel dimensions (`20px`, `32px`, `40px`) with `theme.spacing()` calls
+  - Updated all components to use direct theme access following MUI best practices
+  - Removed custom helper functions in favor of direct theme references
+  - Fixed TypeScript error with `navigator.clipboard` by adding proper type checking
+
+### Changed
+
+- **Theme Refactoring**: Refactored theme to follow MUI best practices
+  - Removed custom helper functions (`getCodeFontSize`, `getCodeFontFamily`, `getSmallFontSize`, `getFontWeightSemiBold`)
+  - Updated typography to use MUI's built-in variants (`body2` for code text, `caption` for small text)
+  - Ensured Montserrat font family is used consistently throughout the app (including code elements)
+  - Components now use direct theme access via `theme.typography.*` and `theme.spacing()` instead of helper functions
+  - Follows MUI documentation patterns for theme customization
 - **View Configuration Feature**: Added read-only configuration view for all setup sections
   - "View Configuration" button appears when a section is completed
   - Displays configuration details from `app.config.json` in a dialog

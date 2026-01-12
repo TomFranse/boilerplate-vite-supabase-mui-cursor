@@ -118,7 +118,11 @@ export const TableStructureDisplay = ({
                   mb: 1,
                 }}
               >
-                <Typography variant="subtitle1" component="div" sx={{ fontWeight: 500 }}>
+                <Typography
+                  variant="subtitle1"
+                  component="div"
+                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+                >
                   {field.name}
                 </Typography>
                 <Chip

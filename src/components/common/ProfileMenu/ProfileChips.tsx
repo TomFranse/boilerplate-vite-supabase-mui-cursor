@@ -22,7 +22,7 @@ export const ProfileChips = ({ profile }: ProfileChipsProps) => {
           label={roleDisplay}
           size="small"
           variant="outlined"
-          sx={{ height: 20, fontSize: "0.65rem" }}
+          sx={{ fontSize: (theme) => theme.typography.caption.fontSize }}
         />
       )}
       {hasCredits && (
@@ -31,7 +31,7 @@ export const ProfileChips = ({ profile }: ProfileChipsProps) => {
           size="small"
           variant="outlined"
           color="primary"
-          sx={{ height: 20, fontSize: "0.65rem" }}
+          sx={{ fontSize: (theme) => theme.typography.caption.fontSize }}
         />
       )}
       {hasOrganization && (
@@ -39,7 +39,7 @@ export const ProfileChips = ({ profile }: ProfileChipsProps) => {
           label={profile.ef_nl_edu_person_home_organization}
           size="small"
           variant="outlined"
-          sx={{ height: 20, fontSize: "0.65rem" }}
+          sx={{ fontSize: (theme) => theme.typography.caption.fontSize }}
         />
       )}
     </Box>

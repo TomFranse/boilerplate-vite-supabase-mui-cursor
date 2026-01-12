@@ -22,7 +22,10 @@ export const ProfileInfo = ({ user, profile, profileLoading }: ProfileInfoProps)
   return (
     <Box sx={{ px: 2, py: 1.5 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-        <Avatar src={avatarUrl || undefined} sx={{ width: 40, height: 40 }}>
+        <Avatar
+          src={avatarUrl || undefined}
+          sx={{ width: (theme) => theme.spacing(5), height: (theme) => theme.spacing(5) }}
+        >
           {avatarInitial || <PersonIcon />}
         </Avatar>
         <Box sx={{ flex: 1, minWidth: 0 }}>

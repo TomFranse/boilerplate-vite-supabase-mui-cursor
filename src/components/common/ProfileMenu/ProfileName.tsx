@@ -12,7 +12,7 @@ export const ProfileName = ({ displayName, isVerified }: ProfileNameProps) => {
       <Typography
         variant="subtitle2"
         sx={{
-          fontWeight: 600,
+          fontWeight: (theme) => theme.typography.fontWeightBold,
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
@@ -21,7 +21,11 @@ export const ProfileName = ({ displayName, isVerified }: ProfileNameProps) => {
         {displayName}
       </Typography>
       {isVerified && (
-        <VerifiedIcon fontSize="small" color="primary" sx={{ fontSize: 16, flexShrink: 0 }} />
+        <VerifiedIcon
+          fontSize="small"
+          color="primary"
+          sx={{ fontSize: (theme) => theme.spacing(2), flexShrink: 0 }}
+        />
       )}
     </Box>
   );

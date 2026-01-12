@@ -28,7 +28,7 @@ export const ProfileMenuTrigger = ({ user, profile, onClick, open }: ProfileMenu
       >
         <Avatar
           src={isLoggedIn ? avatarUrl || undefined : undefined}
-          sx={{ width: 32, height: 32 }}
+          sx={{ width: (theme) => theme.spacing(4), height: (theme) => theme.spacing(4) }}
         >
           {isLoggedIn && avatarInitial ? avatarInitial : <PersonIcon />}
         </Avatar>
