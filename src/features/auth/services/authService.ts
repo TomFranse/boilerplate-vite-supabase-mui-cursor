@@ -1,7 +1,7 @@
 import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
 import { getEntreefederatieDomain } from "@config/entreefederatie";
 import type { User, LoginCredentials, SignUpCredentials } from "../types/auth.types";
-import { supabaseUserToUser } from "../utils/userUtils";
+import { supabaseUserToUser } from "@/shared/utils/userUtils";
 
 export const login = async (
   credentials: LoginCredentials

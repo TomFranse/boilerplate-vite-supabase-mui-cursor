@@ -9,12 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Boilerplate Extraction System**: Added enterprise-grade scalability tools from main app
+  - Project structure validation system with `projectStructure.config.cjs`
+  - Dependency cruiser for architecture validation (`arch:check` command)
+  - Husky pre-commit hooks with lint-staged
+  - ESLint architecture boundary rules (`lint:arch` command)
+  - Comprehensive complexity rules (cyclomatic, cognitive, max-statements, etc.)
 - **Theme Customization**: Default theme now pre-populated in theme customization dialog
   - Theme JSON input field automatically shows default theme options as starting point
   - Default theme content imported directly from `defaultTheme.ts` (single source of truth)
   - Users can see what's available and modify from there
 
 ### Changed
+
+- **ESLint Configuration**: Increased `max-statements` threshold from 10 to 15
+  - Accommodates standard async patterns with proper error handling
+  - Aligns with cognitive complexity threshold (15)
+  - Reduces false positives for well-structured async functions
+- **Project Structure**: Reorganized files to match enterprise architecture rules
+  - Moved `src/common/` → `src/components/common/`
+  - Moved `src/store/contexts/` → `src/shared/context/`
+  - Moved `src/features/auth/utils/` → `src/shared/utils/`
+  - Renamed `test/` → `tests/` folder
+  - Colocated test files (removed `__tests__` folders)
+  - Updated all import paths to use correct aliases
+- **HostingSection**: Refactored to use data-driven approach
+  - Extracted hardcoded provider data to `HOSTING_PROVIDERS` constant array
+  - Replaced repetitive JSX with `map()` function
+  - Reduced `HostingDialog` from 161 lines → 72 lines (55% reduction)
+  - Improved maintainability and scalability
 
 - **SetupDialog**: Made dialog scale flexibly to fill available screen space
   - Dialog now uses responsive width/height (95% on mobile down to 80% on large screens)
@@ -39,6 +62,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Migration Function**: Removed `migrateOldSetupState` from `setupUtils.ts`
+  - Removed backward compatibility migration logic
+  - Removed unused `detectCompletedSections` helper function
+  - Removed unused imports (`isSupabaseConfigured`, `isAirtableConfigured`, `getCustomTheme`)
+  - Simplified `useSetupFinish` hook (removed migration useEffect)
+  - Reduced `setupUtils.ts` from 163 lines → 87 lines (47% reduction)
 - **Login and Signup Pages**: Removed dedicated authentication pages
   - Removed `LoginPage` and `SignUpPage` components
   - Removed `AuthLayout` (no longer needed)

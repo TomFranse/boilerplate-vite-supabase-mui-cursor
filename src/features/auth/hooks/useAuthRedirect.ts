@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "@store/contexts/AuthContext";
+import { useAuthContext } from "@/shared/context/AuthContext";
 import { getAndClearRedirectPath } from "@utils/redirectUtils";
 
 /**

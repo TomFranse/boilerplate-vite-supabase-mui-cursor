@@ -1,16 +1,218 @@
 ---
-description: "Cloud and edge function organization by business capability"
+description: "When to use Edge Functions vs frontend, function organization, and architecture guidelines"
 alwaysApply: false
-globs: ["**/functions/**", "**/edge-functions/**"]
+globs: ["**/functions/**", "**/edge-functions/**", "**/supabase/functions/**"]
 ---
 
-# Cloud/Edge Functions Organization
+# Cloud/Edge Functions Architecture
 
 ## Purpose
 
-This rule defines how cloud and edge functions should be organized by business capability rather than technical concerns.
+This rule defines:
+- **When to use Edge Functions** vs frontend logic (decision framework)
+- **How to organize** functions by business capability
+- **Architecture patterns** and deployment considerations
 
-## Core Principle
+## Function Location
+
+**SSOT:** See `architecture/RULE.md` for project structure and directory organization standards.
+
+**Function Location Guidelines:**
+
+- **Supabase Edge Functions**: MUST be housed in `supabase/functions/`
+  - Each function is a subdirectory: `supabase/functions/<function-name>/index.ts`
+  - Shared utilities: `supabase/functions/_shared/`
+  - Deploy via: `supabase functions deploy <function-name>`
+
+- **Other Cloud/Edge Functions** (Cloud Run, Railway, etc.):
+  - Location: `cloud-functions/<service-name>/`
+  - Example: `cloud-functions/greenpt-proxy/` for Cloud Run/Railway deployments
+  - These are separate from Supabase Edge Functions and use different runtimes (Node.js, etc.)
+
+For complete project structure guidelines, refer to `architecture/RULE.md`.
+
+## Critical Context: Deployment Model
+
+**This project has experimental and main branches that share ONE Supabase project.**
+
+- Frontend code deploys separately per branch (experimental vs main)
+- Edge Functions deploy ONCE and affect BOTH branches
+- No staging environment for Edge Functions
+- No automated testing or rollback for functions
+- Bugs in Edge Functions impact the entire app across all branches
+
+**Consequence:** Edge Functions are MORE fragile than frontend code in this architecture.
+
+## When to Use Edge Functions
+
+### ✅ Required Use Cases
+
+Use Edge Functions ONLY when absolutely necessary:
+
+1. **Security-Critical Operations**
+   - Operations that must never be client-side for security
+   - Example: Admin privilege escalation, payment processing
+   - Pattern: Client cannot be trusted with the logic
+
+2. **Server-Only Capabilities**
+   - Operations requiring server-side secrets/keys
+   - Example: Third-party API calls (Gamma API, payment gateways)
+   - Pattern: Credentials must stay server-side
+
+3. **System Events**
+   - Supabase Auth lifecycle (handled via database triggers, not Edge Functions)
+   - Pattern: System-initiated, not user-initiated
+
+4. **Existing Functions**
+   - Current Edge Functions in this project (located in `supabase/functions/`):
+     - `gamma-generate` / `gamma-status` - Presentation generation (server-side API)
+     - `tool-execute` - Unified tool execution endpoint (image generation, Gamma, etc.)
+     - `migrate-base64-files` - File migration utility
+     - Database triggers handle user creation automatically (not Edge Functions)
+
+### ❌ Avoid Edge Functions For
+
+**Do NOT use Edge Functions for:**
+
+1. **Data Aggregation / Calculations**
+   - ❌ Bad: Database triggers to sum/count data
+   - ✅ Good: Frontend uses PostgreSQL `UPDATE ... SET column = column + value` during saves
+   - Reason: Frontend is testable per-branch; function bugs affect all branches
+
+2. **User-Initiated Operations**
+   - ❌ Bad: Edge Function triggered by user action
+   - ✅ Good: Frontend handles directly, uses Supabase client with atomic operations
+   - Reason: Frontend failures are isolated; function failures are global
+
+3. **Transformations**
+   - ❌ Bad: Edge Function to transform/validate data on write
+   - ✅ Good: Frontend transforms before writing, RLS policies validate
+   - Reason: Logic changes can be tested on experimental branch first
+
+4. **Notification Logic**
+   - ❌ Bad: Edge Function to send notifications on events
+   - ✅ Good: Frontend sends via client SDK or scheduled job
+   - Reason: Notification failures shouldn't block entire app
+
+## Pattern: Frontend with Atomic Operations
+
+**Preferred approach for user-initiated operations:**
+
+```typescript
+// ✅ GOOD: Frontend handles with Supabase client operations
+import {supabase} from '../../config/supabase';
+
+// For updates with increments, use PostgreSQL UPDATE
+await supabase.rpc('increment_user_stats', {
+  user_id: userId,
+  messages: 1,
+  tokens: tokens,
+  cost: cost
+});
+
+// Or use direct UPDATE with atomic operations
+await supabase
+  .from('users')
+  .update({
+    total_messages: supabase.raw('total_messages + 1'),
+    total_tokens: supabase.raw('total_tokens + ?', [tokens]),
+    updated_at: new Date().toISOString()
+  })
+  .eq('id', userId);
+```
+
+**Why this is better than an Edge Function trigger:**
+- ✅ Testable on experimental branch first
+- ✅ Atomic via PostgreSQL (no race conditions)
+- ✅ Fails gracefully (doesn't block conversation save)
+- ✅ Easy rollback (git revert)
+- ✅ No deployment lag
+
+## Architecture Consistency
+
+**Current app architecture is frontend-heavy:**
+- Direct API calls to OpenRouter (chat completion)
+- Direct Supabase writes (conversations, assistants, messages)
+- Client-side routing and state management
+- Minimal backend logic
+- TanStack Query for data fetching and caching
+
+**Maintain this consistency:**
+- Don't introduce Edge Functions for operations that fit the frontend pattern
+- Only add functions when truly required (see "Required Use Cases")
+- Document why each function is necessary
+
+## Decision Framework
+
+When considering adding an Edge Function, ask:
+
+1. **Security:** Must this logic be server-side for security?
+   - Yes → Edge Function might be needed
+   - No → Use frontend
+
+2. **Secrets:** Does this require server-side credentials?
+   - Yes → Edge Function needed
+   - No → Use frontend
+
+3. **Testability:** Can I test this safely on experimental branch?
+   - Yes → Prefer frontend
+   - No → Consider if the feature is worth the risk
+
+4. **Failure Mode:** What happens if this fails?
+   - Blocks critical operations → Consider frontend with better error handling
+   - Nice-to-have feature → Definitely frontend
+   - Security issue if client-side → Edge Function required
+
+## Testing Strategy
+
+**SSOT:** See `testing/RULE.md` for testing standards, patterns, and quality requirements.
+
+**Edge Functions Testing Considerations:**
+
+- Manual testing only (no staging environment)
+- Changes affect both experimental and main immediately
+- Consider impact before adding new functions
+- Deploy via `supabase functions deploy <function-name>`
+
+**Frontend Logic Testing Considerations:**
+
+- Test on experimental branch
+- User testing before merging to main
+- Easy rollback if issues found
+
+For complete testing guidelines and patterns, refer to `testing/RULE.md`.
+
+## Migration Path
+
+If an existing Edge Function could be replaced with frontend logic:
+
+1. Implement frontend version on experimental branch
+2. Test thoroughly
+3. Deploy frontend changes to main
+4. Monitor for issues
+5. Only after proven stable, remove Edge Function
+6. Document the architectural decision
+
+## Examples from This Project
+
+### Example 1: Usage Tracking (Moved to Frontend)
+
+**Originally:** Edge Function trigger on conversation write
+**Problem:** Bugs affect both branches, can't test safely
+**Solution:** Frontend PostgreSQL UPDATE after successful save
+**Result:** Simpler, testable, consistent with app architecture
+
+### Example 2: Presentation Generation (Kept as Edge Function)
+
+**Why Edge Function:** 
+- Requires server-side Gamma API key
+- External service call with authentication
+- Security requirement (can't expose API key)
+**Result:** Correctly uses Edge Function
+
+## Function Organization
+
+### Core Principle
 
 **Group functions by Business Capability, not by technical similarity.**
 
@@ -73,7 +275,11 @@ export async function handleRequest(req: Request): Promise<Response> {
 // Bad: Functions organized by technical similarity, not business capability
 ```
 
-## When to Create a New Function
+### When to Create a New Function
+
+**Before creating a new function, ensure it meets the "When to Use Edge Functions" criteria above.**
+
+Then, consider organization:
 
 Create a new function when:
 - A new business capability emerges that doesn't fit existing functions
@@ -84,6 +290,57 @@ Do NOT create a new function when:
 - The functionality fits an existing business capability
 - You can extend an existing function without breaking its single responsibility
 - The change is purely technical (refactoring, not new capability)
+- The operation can be handled by frontend logic (see "Avoid Edge Functions For" above)
+
+## Summary
+
+**Default to frontend logic** unless you have a clear security, secret management, or system event reason for Edge Functions.
+
+The fragility of Edge Functions in this deployment model means they should be used sparingly and only when absolutely necessary.
+
+When Edge Functions are required, organize them by business capability for better maintainability, performance, and security.
+
+---
+
+## Legacy: Firebase Cloud Functions (Deprecated)
+
+> **Note:** This section documents the legacy Firebase Cloud Functions architecture. The project has migrated to Supabase Edge Functions. This content is kept for reference during migration period.
+
+### Legacy Deployment Model
+
+**This project previously used Firebase Cloud Functions that shared ONE Firebase project.**
+
+- Frontend code deployed separately per branch (experimental vs main)
+- Cloud Functions deployed ONCE and affected BOTH branches
+- No staging environment for Cloud Functions
+- No automated testing or rollback for functions
+- Bugs in Cloud Functions impacted the entire app across all branches
+
+### Legacy Cloud Functions
+
+**Previously used Cloud Functions:**
+- `gammaGenerate` / `gammaStatus` - Presentation generation (server-side API) → Migrated to `gamma-generate` / `gamma-status` Edge Functions
+- `listUsers` / `setUserRole` / `setUserDeveloperStatus` - Admin operations → Migrated to `list-users` / `set-user-role` Edge Functions
+- `onAuthUserCreate` / `onAuthUserDelete` - Auth lifecycle → Replaced by Supabase database triggers
+- `testAuth` / `backfillUsersFromAuth` - Utility functions → Migrated or deprecated
+
+### Legacy Pattern: Frontend with Firestore Atomic Operations
+
+**Previous approach for user-initiated operations:**
+
+```typescript
+// ❌ LEGACY: Firestore operations (no longer used)
+import {doc, updateDoc, increment, serverTimestamp} from 'firebase/firestore';
+
+await updateDoc(userRef, {
+  totalMessages: increment(1),
+  totalTokens: increment(tokens),
+  totalCost: increment(cost),
+  lastUpdate: serverTimestamp()
+});
+```
+
+**Migration:** This pattern has been replaced with Supabase client operations using PostgreSQL atomic updates.
 
 ---
 
@@ -91,10 +348,15 @@ Do NOT create a new function when:
 
 **When modifying this rule, check these rules for consistency:**
 
-- `architecture/RULE.md` - Code organization and separation of concerns
-- `workflow/RULE.md` - Deployment processes for cloud functions
+- `architecture/RULE.md` - **SSOT** for project structure and function location (referenced in Function Location section)
+- `testing/RULE.md` - **SSOT** for testing standards (referenced in Testing Strategy section)
+- `workflow/RULE.md` - Deployment processes for cloud functions, branch protection
 - `security/RULE.md` - Security considerations for function organization
+- `project-specific/RULE.md` - Rate limiting patterns for Edge Functions
 
 **Rules that reference this rule:**
 - `workflow/RULE.md` - References deployment of cloud functions
+- `architecture/RULE.md` - References function organization patterns
+- `security/RULE.md` - References security considerations for functions
+- `testing/RULE.md` - References Edge Functions testing considerations
 

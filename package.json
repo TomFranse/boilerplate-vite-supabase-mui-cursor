@@ -13,13 +13,23 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
     "type-check": "tsc --noEmit --project tsconfig.app.json",
     "test": "vitest",
+    "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "clean": "gts clean",
     "cleanup-setup": "node scripts/cleanup-setup.js",
     "compile": "tsc",
     "fix": "gts fix",
-    "prepare": "npm.cmd run compile"
+    "prepare": "husky",
+    "arch:check": "depcruise --config .dependency-cruiser.cjs src",
+    "arch:check:ci": "depcruise --config .dependency-cruiser.cjs --output-type err-long src",
+    "arch:graph": "depcruise --config .dependency-cruiser.cjs --output-type dot src | dot -T svg > architecture-graph.svg",
+    "arch:graph:html": "depcruise --config .dependency-cruiser.cjs --output-type html src > architecture-report.html",
+    "arch:validate": "pnpm lint && pnpm arch:check",
+    "arch:baseline": "depcruise --config .dependency-cruiser.cjs --output-type baseline src > .dependency-cruiser-baseline.json",
+    "lint:arch": "eslint src --rule 'boundaries/element-types: error'",
+    "validate:structure": "node scripts/project-structure-validator.js",
+    "validate:structure:json": "node scripts/project-structure-validator.js --format=json"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -43,18 +53,38 @@
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
+    "dependency-cruiser": "^17.3.6",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-boundaries": "^5.3.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "eslint-plugin-sonarjs": "^3.0.5",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^16.5.0",
     "gts": "^7.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.3.0",
+    "lint-staged": "^16.2.7",
+    "minimatch": "^10.0.1",
     "prettier": "^3.7.4",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
     "vitest": "^4.0.16"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "projectStructure.config.cjs": [
+      "pnpm validate:structure"
+    ],
+    ".dependency-cruiser.cjs": [
+      "pnpm arch:check"
+    ]
   }
 }

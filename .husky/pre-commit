@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged for staged files
+pnpm lint-staged
+
+# Run tests
+pnpm test:run
+
+# Type check
+pnpm type-check
+
+# Validate project structure
+pnpm validate:structure
+
+# Architecture check
+pnpm arch:check

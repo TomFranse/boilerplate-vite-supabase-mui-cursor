@@ -1,0 +1,13 @@
+{
+  "name": "firebase-migration-scripts",
+  "version": "1.0.0",
+  "description": "Scripts for migrating Firebase data structure",
+  "main": "migrateFirestore.js",
+  "scripts": {
+    "migrate": "node migrateFirestore.js",
+    "verify": "node verifyMigration.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.10.1"
+  }
+} 

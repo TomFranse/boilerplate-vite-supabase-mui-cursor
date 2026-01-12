@@ -1,9 +1,9 @@
 import { Container, Box, Typography, Button } from "@mui/material";
 import { CheckCircle } from "@mui/icons-material";
-import { SupabaseCard } from "@features/setup/sections/SupabaseSection";
-import { AirtableCard } from "@features/setup/sections/AirtableSection";
-import { HostingCard } from "@features/setup/sections/HostingSection";
-import { ThemeCard } from "@features/setup/sections/ThemeSection";
+import { SupabaseCard } from "@/features/setup/components/sections/SupabaseSection";
+import { AirtableCard } from "@/features/setup/components/sections/AirtableSection";
+import { HostingCard } from "@/features/setup/components/sections/HostingSection";
+import { ThemeCard } from "@/features/setup/components/sections/ThemeSection";
 import { useSetupFinish } from "@features/setup/hooks/useSetupFinish";
 import { FinishSetupDialog } from "@features/setup/components/FinishSetupDialog";
 

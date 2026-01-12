@@ -139,7 +139,7 @@ At the end, sum the points and compute a percentage.
 
 **F1. File structure & component size (0–5)**
 - File is not excessively large; complex logic is split into smaller components or hooks
-- Follows your repo's conventions for folder/file naming (ComponentName.tsx, useXyz.ts, etc.)
+- Follows project structure conventions (see `.cursor/rules/architecture/RULE.md` and `documentation/PROJECT-STRUCTURE-VALIDATION.md` for SSOT)
 
 **F2. Readability & style (0–5)**
 - Code is easy to read: consistent formatting, clear variable names, minimal nesting
@@ -150,10 +150,8 @@ At the end, sum the points and compute a percentage.
 - Shared logic is extracted (to hooks/helpers) when it appears in multiple places
 
 **F4. Complexity metrics (0–5)**
-- Cyclomatic complexity ≤ 10 per function (no excessive branching)
-- Nesting depth ≤ 4 levels (no pyramid of doom)
-- Function length reasonable (≤ 50 lines per function)
-- Parameter count ≤ 3 per function (use objects for more)
+- Meets complexity standards (see `.cursor/rules/code-style/RULE.md` for SSOT - complexity thresholds defined in `.eslintrc.json` lines 65-70)
+- Cyclomatic complexity ≤ 10, cognitive complexity ≤ 15, nesting ≤ 4, function length ≤ 100 lines, parameters ≤ 5
 
 ---
 
@@ -179,7 +177,7 @@ At the end, sum the points and compute a percentage.
 
 **H2. Tech stack fit (0–5)**
 - Uses patterns consistent with the rest of the codebase
-- Follows architectural norms established in the repo
+- Follows architectural standards (see `.cursor/rules/architecture/RULE.md` for SSOT)
 - Doesn't introduce conflicting patterns or approaches
 
 **H3. Integration & regression (0–5)**

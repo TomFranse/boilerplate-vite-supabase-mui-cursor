@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAuthContext } from "@store/contexts/AuthContext";
+import { useAuthContext } from "@/shared/context/AuthContext";
 
 interface UseProfileMenuHandlersProps {
   onClose: () => void;

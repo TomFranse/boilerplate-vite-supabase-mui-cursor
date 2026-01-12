@@ -1,19 +1,13 @@
-import { useState, useEffect } from "react";
-import { migrateOldSetupState } from "@utils/setupUtils";
+import { useState } from "react";
 import { finishSetup } from "../services/setupService";
 
 /**
  * Hook for managing setup finish flow.
- * Handles dialog state, migration, and finish logic.
+ * Handles dialog state and finish logic.
  */
 export const useSetupFinish = () => {
   const [finishDialogOpen, setFinishDialogOpen] = useState(false);
   const [finishing, setFinishing] = useState(false);
-
-  // Migrate old state on mount
-  useEffect(() => {
-    migrateOldSetupState();
-  }, []);
 
   const handleOpenDialog = () => {
     setFinishDialogOpen(true);

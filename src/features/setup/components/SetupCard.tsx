@@ -8,7 +8,7 @@ import {
   Avatar,
 } from "@mui/material";
 import { CheckCircle, SkipNext, HourglassEmpty, RadioButtonUnchecked } from "@mui/icons-material";
-import { Card } from "@common/Card";
+import { Card } from "@/components/common/Card";
 import type { SetupStatus } from "@utils/setupUtils";
 
 interface SetupCardProps {

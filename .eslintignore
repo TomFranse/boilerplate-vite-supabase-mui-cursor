@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+migrations/
+scripts/
+supabase/functions/
+cloud-functions/
+backups/
+src/_reference/**
+*.config.js

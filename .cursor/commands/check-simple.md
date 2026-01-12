@@ -1,20 +1,19 @@
-#  check-simple
-Use the following workflow for any feature request I provide:
+# check-simple
+
+Use this workflow for any feature request:
 
 ### Preparation Steps
-1. Review the current state of the feature and summarize the relevant functionality, limitations, and context.
-2. Identify the expert role(s) needed to address the request, including any roles required due to cascading technical or architectural considerations.
-3. From the perspective of the identified expert, ask targeted questions that clarify design intent.
-   - Number each question (1, 2, 3).
-   - Provide example answers for each question, labeled (A, B, C, other).
-   - Ensure questions enable confident transition to implementation once answered.
+1. Review current state: summarize relevant functionality, limitations, and context.
+2. Identify expert role(s) needed, including cascading technical/architectural considerations.
+3. Ask targeted questions (numbered 1, 2, 3) with example answers (A, B, C, other) that enable confident transition to implementation.
 
 ### After I answer the questions
-Create an implementation plan in /documentation/jobs/job_[jobname] that:
-- Prioritizes code efficiency, maintainability, consistency, and reuse.
-- Minimizes complexity and avoids custom solutions where existing dependencies or patterns suffice.
-- Reviews current functionality and intended end state.
-- Includes pseudo-code sketches of required components.
-- Identifies existing components that can be repurposed; for any new components, specify purpose, location, and how they remain reusable and non-redundant.
+Create an implementation plan in `/documentation/jobs/job_[jobname]` that:
+- Prioritizes efficiency, maintainability, consistency, reuse
+- Minimizes complexity; prefer existing patterns/dependencies
+- Reviews current vs intended end state
+- Includes pseudo-code sketches
+- Identifies reusable components; for new ones: purpose, location (`file-placement/RULE.md`), reusability
+- **Validates:** File placement (`projectStructure.config.js`), architecture (`architecture/RULE.md`), complexity (SSOT: `.eslintrc.json` lines 65-70)
 
 Apply this workflow for every feature request.

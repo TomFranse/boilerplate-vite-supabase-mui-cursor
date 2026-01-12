@@ -1,7 +1,7 @@
 import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
 import * as authService from "../services/authService";
-import { supabaseUserToUser } from "../utils/userUtils";
-import { isOAuthRedirectInProgress } from "../utils/oauthUtils";
+import { supabaseUserToUser } from "@/shared/utils/userUtils";
+import { isOAuthRedirectInProgress } from "@/shared/utils/oauthUtils";
 import type { User } from "../types/auth.types";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 

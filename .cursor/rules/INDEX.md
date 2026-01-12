@@ -11,6 +11,7 @@ Quick reference guide to all rules and their relationships.
 - Code organization
 - **GTS linting** (default, with override option)
 - **TypeScript strict mode** (required)
+- **Complexity standards** (functions ≤ 10 cyclomatic, ≤ 15 cognitive, ≤ 100 lines)
 
 **Related to:** All other rules
 
@@ -52,7 +53,7 @@ Quick reference guide to all rules and their relationships.
 - **Git workflow with changelog synchronization** (mandatory)
 - **Semantic versioning** (required: MAJOR.MINOR.PATCH)
 - **Commit message format** (version first, matches changelog)
-- **Branch patterns** (feature, experimental, develop)
+- **Branch protection** (experimental/main/feature branches with verification)
 - Development process
 - PR standards
 - Agent-specific behaviors
@@ -64,11 +65,51 @@ Quick reference guide to all rules and their relationships.
 ---
 
 ### Cloud Functions (`cloud-functions/RULE.md`)
+- **When to use Edge Functions** vs frontend logic (decision framework)
 - Function organization by business capability
-- Performance and security considerations
-- When to create new functions
+- Deployment model and fragility considerations
+- Testing strategy and migration paths
 
 **Related to:** architecture, workflow, security
+
+---
+
+### Database (`database/RULE.md`)
+- Database migration best practices for Supabase/PostgreSQL
+- Safe migration patterns (idempotent, handles fresh/existing databases)
+- Testing migrations (fresh database and incremental updates)
+- Error handling and logging patterns
+
+**Related to:** security, workflow, architecture
+
+---
+
+### Debugging (`debugging/RULE.md`)
+- Debugging strategies and logging practices
+- Scientific Method Debugging process
+- Issue analysis and flow reconstruction
+- Reductive strategy for bugs and new features
+
+**Related to:** workflow, testing, architecture
+
+---
+
+### Project-Specific (`project-specific/RULE.md`)
+- Rate limiting patterns for Edge Functions
+- Project-specific security implementations
+- Implementation examples and checklists
+
+**Related to:** security, cloud-functions, database
+
+---
+
+### File Placement (`file-placement/RULE.md`)
+- **Validate file and folder placement before creation** (mandatory pre-creation check)
+- Project structure validation using `projectStructure.config.js`
+- Architecture compliance verification
+- Guidance for correct file/folder locations
+
+**Related to:** architecture, workflow
 
 ---
 
@@ -79,11 +120,15 @@ When modifying a rule, check these related rules:
 | Rule | Check These Rules |
 |------|-------------------|
 | `code-style` | architecture, testing, workflow |
-| `architecture` | code-style, testing, security, workflow, cloud-functions |
-| `testing` | code-style, architecture, workflow |
-| `security` | architecture, code-style, workflow, cloud-functions |
+| `architecture` | code-style, testing, security, workflow, cloud-functions, database |
+| `testing` | code-style, architecture, workflow, debugging |
+| `security` | architecture, code-style, workflow, cloud-functions, database, project-specific |
 | `workflow` | All rules (references them) |
-| `cloud-functions` | architecture, workflow, security |
+| `cloud-functions` | architecture, workflow, security, project-specific |
+| `database` | security, workflow, architecture |
+| `debugging` | workflow, testing, architecture |
+| `project-specific` | security, cloud-functions, database |
+| `file-placement` | architecture, workflow |
 
 ## Adding a New Rule
 

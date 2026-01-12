@@ -37,6 +37,82 @@ This rule defines security best practices, vulnerability prevention, and secure 
 - Validate authorization at the API boundary
 - Never trust client-side authorization checks
 
+### Row Level Security (RLS) Performance
+
+**SSOT:** This section defines RLS policy performance best practices for Supabase.
+
+#### Critical Rules
+
+**1. Always Use Subquery Syntax for `auth.uid()` and `auth.jwt()`**
+
+**❌ BAD:** `auth.uid() = user_id` (re-evaluated per row)  
+**✅ GOOD:** `(select auth.uid()) = user_id` (cached, evaluated once)
+
+**Pattern:** Always wrap `auth.uid()` and `auth.jwt()` in `(select ...)` subqueries.
+
+**2. Never Create Multiple Permissive Policies for Same Role/Action**
+
+**❌ BAD:** Two separate SELECT policies  
+**✅ GOOD:** One SELECT policy with OR logic
+
+**Example:**
+```sql
+-- ✅ GOOD: Combined policy
+CREATE POLICY "Users can read data" ON table_name
+  FOR SELECT USING (
+    (select auth.uid()) = user_id OR
+    is_admin_user((select auth.uid()))
+  );
+```
+
+**3. Never Use `FOR ALL` When You Have Specific Operation Policies**
+
+**❌ BAD:** `FOR ALL` + `FOR SELECT` (overlaps, causes performance issues)  
+**✅ GOOD:** Split `FOR ALL` into separate INSERT/UPDATE/DELETE policies
+
+**Example:**
+```sql
+-- ✅ GOOD: Separate policies
+CREATE POLICY "Users can read" ON table_name FOR SELECT USING (...);
+CREATE POLICY "Admins can insert" ON table_name FOR INSERT WITH CHECK (...);
+CREATE POLICY "Admins can update" ON table_name FOR UPDATE USING (...);
+CREATE POLICY "Admins can delete" ON table_name FOR DELETE USING (...);
+```
+
+#### RLS Policy Checklist
+
+Before creating/modifying RLS policies:
+- [ ] Uses `(select auth.uid())` not `auth.uid()`
+- [ ] Uses `(select auth.jwt())` not `auth.jwt()` (if applicable)
+- [ ] No multiple permissive policies for same role/action
+- [ ] No `FOR ALL` when `FOR SELECT` exists (split into separate policies)
+- [ ] Function calls use cached auth: `is_admin_user((select auth.uid()))`
+
+#### Quick Verification
+
+After creating policies, check for issues:
+```sql
+-- Check for multiple policies
+SELECT tablename, cmd, COUNT(*) 
+FROM pg_policies 
+WHERE schemaname = 'public' 
+GROUP BY tablename, cmd 
+HAVING COUNT(*) > 1;
+
+-- Check for non-optimized auth.uid()
+SELECT tablename, policyname 
+FROM pg_policies 
+WHERE (qual LIKE '%auth.uid()%' AND qual NOT LIKE '%SELECT auth.uid()%')
+   OR (with_check LIKE '%auth.uid()%' AND with_check NOT LIKE '%SELECT auth.uid()%');
+```
+
+#### Performance Impact
+
+- **Before:** `auth.uid()` called 1000 times for 1000 rows = slow
+- **After:** `(select auth.uid())` called once per query = fast
+- **Multiple policies:** PostgreSQL evaluates ALL policies = slow
+- **Single combined policy:** One evaluation = fast
+
 ## Input Validation
 
 ### Sanitization
@@ -79,8 +155,8 @@ This rule defines security best practices, vulnerability prevention, and secure 
 // Input validation and parameterized queries
 export async function getUserById(userId: string): Promise<User> {
   // Validate input
-  if (!userId || typeof userId !== 'string') {
-    throw new Error('Invalid user ID');
+  if (!userId || typeof userId !== "string") {
+    throw new Error("Invalid user ID");
   }
   
   // Use parameterized query
@@ -90,7 +166,7 @@ export async function getUserById(userId: string): Promise<User> {
   );
   
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
   
   return user;
@@ -104,7 +180,7 @@ export async function deleteUser(
   // Verify authorization
   const requester = await getUserById(requestingUserId);
   if (!requester.isAdmin && requester.id !== targetUserId) {
-    throw new Error('Unauthorized');
+    throw new Error("Unauthorized");
   }
   
   await db.query('DELETE FROM users WHERE id = $1', [targetUserId]);
@@ -156,8 +232,12 @@ export async function deleteUser(userId: string) {
 - `workflow/RULE.md` - Security review processes
 - `cloud-functions/RULE.md` - Security considerations for function organization
 
+**SSOT Status:**
+- This rule is the **SSOT** for security best practices, including RLS policy performance optimization
+
 **Rules that reference this rule:**
 - `architecture/RULE.md` - May reference security patterns
 - `testing/RULE.md` - May reference security testing requirements
 - `cloud-functions/RULE.md` - References security considerations
+- `project-specific/RULE.md` - References RLS patterns for rate limiting tables
 

@@ -61,19 +61,19 @@ This rule defines testing requirements, patterns, and quality standards for ensu
 ### ✅ Good Example
 
 ```typescript
-describe('calculateTotalPrice', () => {
-  it('should return price with tax when given valid inputs', () => {
+describe("calculateTotalPrice", () => {
+  it("should return price with tax when given valid inputs", () => {
     const result = calculateTotalPrice(100, 0.20);
     expect(result).toBe(120);
   });
   
-  it('should throw error when price is negative', () => {
+  it("should throw error when price is negative", () => {
     expect(() => calculateTotalPrice(-10, 0.20)).toThrow(
-      'Price cannot be negative'
+      "Price cannot be negative"
     );
   });
   
-  it('should handle zero tax rate', () => {
+  it("should handle zero tax rate", () => {
     const result = calculateTotalPrice(100, 0);
     expect(result).toBe(100);
   });
@@ -84,8 +84,8 @@ describe('calculateTotalPrice', () => {
 
 ```typescript
 // Bad: unclear test names, no edge cases, poor organization
-describe('test', () => {
-  it('works', () => {
+describe("test", () => {
+  it("works", () => {
     expect(calculateTotalPrice(100, 0.20)).toBe(120);
   });
 });
@@ -108,6 +108,33 @@ describe('test', () => {
 - Use appropriate test types for different scenarios
 - Avoid unnecessary async operations
 
+## Edge Functions Testing
+
+### Special Considerations
+
+**Edge Functions have unique testing constraints:**
+
+- **No staging environment**: Edge Functions deploy once and affect both experimental and main branches
+- **Manual testing only**: No automated testing or rollback for functions
+- **High impact**: Bugs in Edge Functions impact the entire app across all branches
+- **Deployment**: Deploy via `supabase functions deploy <function-name>`
+
+**Testing Strategy:**
+
+- Consider impact before adding new functions
+- Test thoroughly in development before deployment
+- Use manual testing workflows
+- Document test procedures for each function
+
+**Frontend Logic Testing** (preferred when possible):
+
+- Test on experimental branch first
+- User testing before merging to main
+- Easy rollback if issues found
+- Better isolation and testability
+
+For Edge Functions architecture and when to use them, see `cloud-functions/RULE.md`.
+
 ---
 
 ## Related Rules
@@ -117,7 +144,13 @@ describe('test', () => {
 - `code-style/RULE.md` - Code style standards for test files
 - `architecture/RULE.md` - Testing patterns that depend on architecture
 - `workflow/RULE.md` - Code review standards for tests
+- `cloud-functions/RULE.md` - Edge Functions testing considerations
+
+**SSOT Status:**
+- This rule is the **SSOT** for testing standards, patterns, and quality requirements
+- Other rules reference this rule for testing guidelines (e.g., `cloud-functions/RULE.md` references testing strategy)
 
 **Rules that reference this rule:**
 - `architecture/RULE.md` - May reference testability requirements
+- `cloud-functions/RULE.md` - References this rule as SSOT for testing standards
 

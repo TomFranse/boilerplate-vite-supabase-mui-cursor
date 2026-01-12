@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Box, Typography, Alert } from "@mui/material";
-import { Button } from "@common/Button";
-import { Input } from "@common/Input";
-import { useAuthContext } from "@store/contexts/AuthContext";
+import { Button } from "@/components/common/Button";
+import { Input } from "@/components/common/Input";
+import { useAuthContext } from "@/shared/context/AuthContext";
 import { isSupabaseConfigured } from "@shared/services/supabaseService";
 import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import type { LoginCredentials } from "../types/auth.types";

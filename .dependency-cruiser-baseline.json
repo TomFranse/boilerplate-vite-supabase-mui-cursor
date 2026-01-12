@@ -1,0 +1,373 @@
+[
+  {
+    "type": "cycle",
+    "from": "src/components/common/EditableAccordionList/EditableAccordionList.tsx",
+    "to": "src/components/common/index.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/components/common/index.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/common/EditableAccordionList/index.ts",
+        "dependencyTypes": [
+          "local",
+          "export"
+        ]
+      },
+      {
+        "name": "src/components/common/EditableAccordionList/EditableAccordionList.tsx",
+        "dependencyTypes": [
+          "local",
+          "export"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "src/components/common/ImageModal/ImageModal.tsx",
+    "to": "src/components/common/index.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/components/common/index.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/components/common/ImageModal/ImageModal.tsx",
+        "dependencyTypes": [
+          "local",
+          "export"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "cycle",
+    "from": "src/shared/services/supabaseService.ts",
+    "to": "src/shared/utils/creditSystem.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/shared/utils/creditSystem.ts",
+        "dependencyTypes": [
+          "local",
+          "dynamic-import"
+        ]
+      },
+      {
+        "name": "src/shared/services/supabaseService.ts",
+        "dependencyTypes": [
+          "local",
+          "type-only",
+          "import"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "dependency",
+    "from": "src/shared/utils/creditSystem.ts",
+    "to": "src/shared/services/roleCreditLimitsService.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-services-in-utils"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/shared/utils/creditSystem.ts",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-services-in-utils"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/shared/utils/fileCreationUtils.ts",
+    "to": "src/shared/services/filesService.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-services-in-utils"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/shared/utils/permissionCheck.ts",
+    "to": "src/shared/services/assistantToolsService.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-services-in-utils"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/shared/utils/usageTracking.ts",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "error",
+      "name": "no-services-in-utils"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/assistants/AssistantsList/AssistantForm.tsx",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/assistants/AssistantsList/AssistantItem.tsx",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/assistants/AssistantsList/AssistantsList.tsx",
+    "to": "src/shared/services/assistantToolsService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/assistants/AssistantsList/AssistantsList.tsx",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/ChatContainer.tsx",
+    "to": "src/shared/services/userSettingsServiceSupabase.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/ChatInput/ChatInput.tsx",
+    "to": "src/shared/services/roleCreditLimitsService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MarkdownEditor/MarkdownEditor.tsx",
+    "to": "src/shared/services/messageMetadataService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MarkdownEditor/useMarkdownLoad.ts",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MarkdownEditor/useMarkdownSave.ts",
+    "to": "src/shared/services/filesService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MarkdownEditor/useMarkdownSave.ts",
+    "to": "src/shared/services/messageMetadataService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MarkdownEditor/useMarkdownSave.ts",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MessageList/MessageList.tsx",
+    "to": "src/shared/services/filesService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MessageList/MessageList.tsx",
+    "to": "src/shared/services/messageMetadataService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/MessageList/MessageList.tsx",
+    "to": "src/shared/services/roleCreditLimitsService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/chat/TopBar/TopBar.tsx",
+    "to": "src/shared/services/roleCreditLimitsService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/common/DynamicInstructionsSelector.tsx",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/common/FileDetailsModal/FileDetailsModal.tsx",
+    "to": "src/shared/services/filesService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/common/GammaPresentationModal/GammaPresentationModal.tsx",
+    "to": "src/shared/services/roleCreditLimitsService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "dependency",
+    "from": "src/components/common/SystemPromptKeysEditor.tsx",
+    "to": "src/shared/services/supabaseService.ts",
+    "rule": {
+      "severity": "warn",
+      "name": "no-direct-service-in-components"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/_reference/migrateToAnalyzer.ts",
+    "to": "src/_reference/migrateToAnalyzer.ts",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/components/common/FadeInImage.tsx",
+    "to": "src/components/common/FadeInImage.tsx",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/setupProxy.js",
+    "to": "src/setupProxy.js",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/setupTests.js",
+    "to": "src/setupTests.js",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/shared/config/openai.ts",
+    "to": "src/shared/config/openai.ts",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/shared/hooks/useAbortController.ts",
+    "to": "src/shared/hooks/useAbortController.ts",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/shared/utils/environment.ts",
+    "to": "src/shared/utils/environment.ts",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  },
+  {
+    "type": "module",
+    "from": "src/utils/error.ts",
+    "to": "src/utils/error.ts",
+    "rule": {
+      "severity": "info",
+      "name": "no-orphan-modules"
+    }
+  }
+]

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { getSupabase, isSupabaseConfigured } from "@shared/services/supabaseService";
 import { handleAuthStateChange } from "./useAuthSession";
-import { cleanOAuthRedirectFromUrl } from "../utils/oauthUtils";
+import { cleanOAuthRedirectFromUrl } from "@/shared/utils/oauthUtils";
 import type { User } from "../types/auth.types";
 
 interface UseAuthStateSubscriptionOptions {

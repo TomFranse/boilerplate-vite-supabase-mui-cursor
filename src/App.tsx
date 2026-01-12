@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Box, useTheme } from "@mui/material";
-import { AuthProvider } from "@store/contexts/AuthContext";
-import { Topbar } from "@components/Topbar";
-import { MainLayout } from "@layouts/MainLayout";
+import { AuthProvider } from "@/shared/context/AuthContext";
+import { Topbar } from "@/components/common/Topbar";
+import { MainLayout } from "@/layouts/MainLayout/MainLayout";
 import { HomePage } from "@pages/HomePage";
 import { SetupPage } from "@pages/SetupPage";
 import { AuthCallbackPage } from "@pages/AuthCallbackPage";
