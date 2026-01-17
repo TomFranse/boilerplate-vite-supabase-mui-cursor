@@ -10,7 +10,8 @@ alwaysApply: true
 **CRITICAL**: These rules must be followed without exception:
 
 - **Double quotes**: ALWAYS use `"` not `'` for strings
-- **Path aliases**: Always use `@common/*`, `@features/*`, etc. - never relative imports
+- **Path aliases**: Always use `@/` prefix (e.g., `@/hooks/*`, `@/components/*`) - never relative imports
+  - **SSOT:** See `architecture/RULE.md` for complete path alias mappings
 - **TypeScript strict mode**: REQUIRED (`strict: true`)
 - **Arrow functions**: Always use parentheses: `(x) => x`
 - **Equality**: Use `===` (never `==`)
@@ -89,17 +90,24 @@ See detailed sections below for complete guidance.
 When adding external package imports:
 
 1. **Verify the package is installed**: Check `package.json` dependencies
-2. **When in doubt, use inline types**: Define types locally or use `any` with eslint-disable rather than importing from potentially unavailable packages
+2. **Types may come from wrappers**: If using a library through a wrapper (e.g., TipTap through `mui-tiptap`), types often come from the wrapper, not the original package
+3. **When in doubt, use inline types**: Define types locally or use `any` with eslint-disable rather than importing from potentially unavailable packages
 
 ## Code Organization
 
 ### Imports
+
+**Style Concerns (this section):**
 - Group imports: external libraries first, then internal modules
 - Sort imports alphabetically within groups
 - Remove unused imports
 - **Type imports**: Use `import type {...}` and place after regular imports in each group
-- **Path aliases** (always use `@/` prefix, never relative — violations are **errors**):
-  - `@/components/*`, `@/pages/*`, `@/hooks/*`, `@/services/*`, `@/utils/*`, `@/types/*`, `@/config/*`, `@/context/*`, `@/theme/*`, `@/routes/*`, `@/lib/*`, `@/ai-capabilities/*`
+
+**Architecture Concerns (SSOT: `architecture/RULE.md`):**
+- **Path aliases**: Always use `@/` prefix, never relative imports — violations are **errors**
+  - **SSOT:** See `architecture/RULE.md` for complete path alias mappings and folder structure
+- **Import direction**: See `architecture/RULE.md` for layer boundaries and import direction rules (downward only: pages → components → hooks → services → utils → types)
+- **Layer boundaries**: See `architecture/RULE.md` for what each layer can/cannot import from
 
 ```typescript
 // ✅ CORRECT
@@ -110,10 +118,10 @@ import { userService } from "@/services/userService";
 // ❌ WRONG
 import { useTodos } from "../../shared/hooks/useTodos"; // Use path alias instead
 import { Button } from "../../components/common/Button"; // Use path alias instead
-import * as todoService from "../services/todoService"; // Components cannot import services directly
+import * as todoService from "../services/todoService"; // Use path alias; prefer hooks over direct service imports
 ```
 
-**Architecture Layer Rules:** See `architecture/RULE.md` for import direction and layer boundaries.
+**For complete import rules:** See `architecture/RULE.md` for import direction, layer boundaries, and architectural best practices.
 
 ### Exports
 - Use named exports over default exports when possible
@@ -256,6 +264,17 @@ When writing code, adhere to these complexity limits to ensure maintainability:
 See Quick Reference for critical rules. Additional guidelines:
 - **Explicit return types**: Required for async functions
 - **Services**: Pure functions only (no React hooks)
+
+```typescript
+export interface User {
+  id: string;
+  email: string;
+}
+
+export const fetchData = async (id: string): Promise<User | null> => {
+  // Pure function, no hooks
+};
+```
 
 ## TypeScript/React Standards
 

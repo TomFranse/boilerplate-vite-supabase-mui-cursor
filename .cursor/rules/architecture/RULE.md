@@ -122,18 +122,48 @@ Standardize your project structure using this exact map. If you create a new fil
 ```
 src/
 ├── assets/       # Static files (images, fonts, global CSS)
-├── common/       # "Dumb" UI components (Button, Input, Modal) - No business logic allowed
-├── features/     # THE CORE - Folders grouped by domain (e.g., 'billing', 'profile')
+├── components/   # UI components
+│   └── common/   # "Dumb" UI components (Button, Input, Modal) - No business logic allowed
+├── features/     # THE CORE - Feature-based organization (grouped by domain)
 │   └── [feature-name]/
 │       ├── components/  # Feature-specific UI
 │       ├── hooks/       # Feature-specific logic (useBillingData)
 │       ├── services/    # Pure functions / API calls (billingApi)
-│       └── types/       # Type definitions (if using TypeScript)
+│       ├── types/       # Feature-specific type definitions
+│       ├── context/     # Feature-specific context providers
+│       └── store/       # Feature-specific state slices
+├── shared/       # Cross-cutting concerns (used across multiple features)
+│   ├── hooks/    # Global hooks (useAuth, useLayout, useLocalStorage)
+│   ├── services/ # Shared services (errorReporting, API clients)
+│   ├── utils/    # Global utilities (date formatters, currency math, validators)
+│   ├── types/    # Shared type definitions
+│   ├── context/  # Cross-feature context providers
+│   └── theme/    # Theme configuration and design tokens
 ├── layouts/      # Page wrappers (Header/Footer/Sidebar)
 ├── pages/        # Route-level components (only used for routing/connecting features)
-├── store/        # Global state (Redux/Zustand/Context)
-└── utils/        # Global helpers (date formatters, currency math)
+├── routes/       # Route definitions and guards
+├── store/        # Global state composition (Redux/Zustand/Context setup)
+├── config/       # Configuration files
+└── lib/          # Third-party library wrappers and integrations
 ```
+
+### Folder Purpose Clarification
+
+**`components/common/`** vs **`shared/`**:
+
+- **`components/common/`**: Presentation-only, reusable UI components
+  - Contains: Button, Input, Modal, Card, etc.
+  - Rule: Zero business logic, zero data fetching, zero feature-specific code
+  - Used by: Any feature or page that needs basic UI elements
+
+- **`shared/`**: Cross-cutting logic and utilities used across features
+  - Contains: hooks, services, utils, types, context, theme
+  - Rule: Reusable logic that doesn't belong to a specific feature
+  - Used by: Multiple features need the same functionality
+  - Examples:
+    - `shared/hooks/useAuth` - Authentication logic used everywhere
+    - `shared/utils/formatDate` - Date formatting used by multiple features
+    - `shared/services/errorReporting` - Error reporting used app-wide
 
 ### Backend/Server-Side Structure
 
@@ -151,10 +181,10 @@ src/
 ## Logic Decision Flowchart
 
 When you write a line of code, ask these questions in order:
-1. Is it a pure calculation? (e.g., formatting a price) → `utils/`
-2. Does it fetch data or talk to an API? → `services/` (inside a feature)
-3. Does it use `useEffect` or `useState`? → `hooks/`
-4. Is it a generic UI element (like a blue button)? → `common/`
+1. Is it a pure calculation? (e.g., formatting a price) → `shared/utils/` (if used by multiple features) or `features/*/services/` (if feature-specific)
+2. Does it fetch data or talk to an API? → `features/*/services/` (feature-specific) or `shared/services/` (cross-feature)
+3. Does it use `useEffect` or `useState`? → `features/*/hooks/` (feature-specific) or `shared/hooks/` (cross-feature)
+4. Is it a generic UI element (like a blue button)? → `components/common/`
 5. Does it connect multiple features or define a URL? → `pages/`
 
 ## ⚠️ CRITICAL: Architecture Rules Are Immutable
@@ -278,6 +308,8 @@ When updating this section, also check:
 
 ### Path Aliases (Required)
 
+**SSOT:** This section is the Single Source of Truth for all path alias definitions. Other rules reference this section.
+
 **Always use path aliases with `@/` prefix** - never relative parent imports (`../`):
 
 - `@/components/*` → `src/components/*`
@@ -337,14 +369,26 @@ import { realtimeService } from "@/services/realtime";
 
 ### Architecture Checking Commands
 
+**Full Validation (Comprehensive):**
 ```bash
-pnpm arch:check          # Quick architecture check
-pnpm arch:check:ci       # CI-friendly verbose output
-pnpm arch:graph          # Generate SVG dependency graph
-pnpm arch:graph:html     # Generate HTML report for stakeholders
-pnpm arch:validate       # Full validation (lint + architecture)
-pnpm lint:arch           # ESLint architecture rules only
+pnpm validate:all              # Full structure + architecture check
+pnpm validate:structure        # Full structure validation
+pnpm arch:check                # Full architecture check
+pnpm arch:check:ci             # CI-friendly verbose output
+pnpm arch:graph                # Generate SVG dependency graph
+pnpm arch:graph:html           # Generate HTML report for stakeholders
+pnpm arch:validate             # Full validation (lint + architecture)
+pnpm lint:arch                 # ESLint architecture rules only
 ```
+
+**Staged Files Only (Fast, for commits):**
+```bash
+pnpm validate:all:staged       # Staged structure + architecture check
+pnpm validate:structure:staged # Staged structure validation only
+pnpm arch:check:staged         # Architecture check (runs full, but reports staged)
+```
+
+**Note:** Pre-commit hook automatically runs staged checks. Use full validation commands for comprehensive checks before major changes or when troubleshooting.
 
 ### Legacy Enforcement (Still Valid)
 
@@ -551,8 +595,13 @@ When reducing code complexity through refactoring, all changes **MUST** comply w
 - `.cursor/commands/complexity-reduce.md` - Complexity reduction (must comply with architecture rules)
 
 **SSOT Status:**
-- This rule is the **SSOT** for project structure, directory organization, and code placement
+- This rule is the **SSOT** for:
+  - Project structure and directory organization
+  - Path alias definitions (`@/hooks/*`, `@/components/*`, etc.)
+  - Code placement and layer boundaries
+  - `common/` vs `shared/` folder distinction
 - Other rules reference this rule for structure guidelines (e.g., `cloud-functions/RULE.md` references function location)
+- `code-style/RULE.md` references this rule for path aliases instead of duplicating them
 - Complexity reduction rules reference this rule for architecture compliance
 
 **Rules that reference this rule:**

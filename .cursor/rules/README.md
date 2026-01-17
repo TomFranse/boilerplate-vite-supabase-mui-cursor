@@ -8,7 +8,7 @@ This directory contains global User Rules that apply across all your projects.
 
 Each rule category serves as the SSOT for its domain:
 
-- **`architecture/RULE.md`**: SSOT for project structure, directory organization, and code placement
+- **`architecture/RULE.md`**: SSOT for project structure, directory organization, code placement, path aliases (`@/hooks/*`, `@/components/*`, etc.), and layer boundaries
 - **`testing/RULE.md`**: SSOT for testing standards, patterns, and quality requirements
 - **`code-style/RULE.md`**: SSOT for naming conventions, formatting, and documentation standards
 - **`security/RULE.md`**: SSOT for security best practices and vulnerability prevention
@@ -32,8 +32,8 @@ Each rule is a folder containing a `RULE.md` file with:
 
 ## Rule Categories
 
-- **code-style**: Naming conventions, formatting, documentation
-- **architecture**: Design patterns, module organization, structure (SSOT for project structure)
+- **code-style**: Naming conventions, formatting, documentation, import ordering (style concerns)
+- **architecture**: Design patterns, module organization, structure (SSOT for project structure, path aliases, and layer boundaries)
 - **testing**: Test coverage, testing patterns, quality gates (SSOT for testing standards)
 - **security**: Security best practices, vulnerability prevention
 - **workflow**: Development processes, code review standards

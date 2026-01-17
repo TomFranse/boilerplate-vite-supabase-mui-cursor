@@ -106,12 +106,32 @@ Provide specific checks and exact values the user should verify.
 
 ---
 
-### 9. Output Structure for Each Response
+### 9. Common Error Pattern Recognition
+When symptoms match known patterns, prioritize these hypotheses first:
+
+**React "Maximum update depth exceeded":**
+- Almost always: an object (not primitive) in a useCallback/useEffect dependency array
+- Check: useMutation/useQuery return objects (unstable), Context values (unmemoized), inline objects
+- Key question: "Is a callback being passed to Context via setState?" (classic loop pattern)
+- Debug approach: Log which dependency actually changed using refs, don't guess
+
+**N8N Webhook "Unused Respond to Webhook node found" (500 error):**
+- Symptom: Webhook returns 500 with message "Unused Respond to Webhook node found in the workflow"
+- Root cause: Webhook node Response Mode is set to auto-respond (default) but a Respond to Webhook node exists downstream
+- Key question: "Is the Webhook node's Response Mode set to 'Using Respond to Webhook node'?"
+- Debug approach: Check N8N workflow configuration, not code - verify Response Mode setting in Webhook node (N8N v1.114+ requires explicit configuration)
+
+**Add other patterns here as they're discovered.**
+
+---
+
+### 10. Output Structure for Each Response
 1. Quick Summary  
 2. Component Nesting Analysis (if UI/React issue)
 3. Event Chain  
-4. Hypotheses (with predictions + falsification conditions)  
-5. Console log changes to verify/falsify all hypotheseses
-6. Unified Action Steps and code changes. 
-7. What to Return  
-8. Next Narrowing Step  
+4. Pattern Match Check (does this match a known pattern from §9?)
+5. Hypotheses (with predictions + falsification conditions)  
+6. Console log changes to verify/falsify all hypotheses
+7. Unified Action Steps and code changes
+8. What to Return  
+9. Next Narrowing Step  
