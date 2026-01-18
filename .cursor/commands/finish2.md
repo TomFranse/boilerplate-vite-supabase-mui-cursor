@@ -12,7 +12,7 @@ Complete the implementation by doing what you haven't done yet of these tasks:
 - (Optional) Check staged files before committing using staged validation commands:
   - `pnpm validate:structure:staged` - Check staged file structure
   - `pnpm arch:check:staged` - Check staged architecture compliance
-- update changelog (fetch date if unsure of date) - see `rules/workflow/RULE.md` for Keep a Changelog format
+- update changelog (fetch date if unsure of date) - see `.cursor/rules/workflow/RULE.md` for Keep a Changelog format
 - commit with proper message format (see commit message standards below)
 - fix any issues found by pre-commit hook. NEVER adjust rules without explicit user request.
 - check if architecture.md needs update
@@ -41,6 +41,6 @@ Complete the implementation by doing what you haven't done yet of these tasks:
 Closes #123
 ```
 
-**Note:** Commit message must match changelog entry. Husky pre-commit hook runs automatically (see `.husky/pre-commit` for SSOT). See `rules/workflow/RULE.md` for complete commit message standards and Keep a Changelog format details.
+**Note:** Commit message must match changelog entry. Husky pre-commit hook runs automatically (see `.husky/pre-commit` for SSOT). See `.cursor/rules/workflow/RULE.md` for complete commit message standards and Keep a Changelog format details.
 
 You have explicit access to use console commands for this task. 
